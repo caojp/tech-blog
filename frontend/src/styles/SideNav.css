@@ -1,0 +1,21 @@
+
+.side-nav {
+    width: 10%;
+    background-color: #f4f4f4;
+    padding: 10px;
+    position: fixed;
+    top: 70px;
+    left: 0;
+}
+
+/* 暗模式样式 */
+.side-nav.dark-mode {
+    background-color: #333; /* 暗模式的背景色 */
+    color: #fff; /* 暗模式的文字颜色 */
+}
+
+.side-nav .nav-item {
+    display: block;
+    margin-bottom: 5px;
+    cursor: pointer;
+}

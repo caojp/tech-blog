@@ -1,0 +1,7 @@
+ServerPort: ":8080"
+ContentDir: "./content"
+
+LOG:
+  LEVEL: "info"
+  ROTATE_DAYS: 7
+  FORMAT: "json"

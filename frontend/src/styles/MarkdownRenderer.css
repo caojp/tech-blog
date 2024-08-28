@@ -1,0 +1,44 @@
+/* Markdown 内容的样式 */
+.markdown-content {
+    flex: 1;
+    position: absolute;
+    left: 10%;
+    top: 70px;
+    padding: 50px 100px 120px 100px;
+    background-color: #ffffff; /* 默认背景颜色 */
+    background-size: cover;
+    transition: background-color 0.3s, background-image 0.3s;
+}
+
+/* 护眼模式背景 */
+.markdown-content.eye-care-mode {
+    background-color: #f0f8f0; /* 护眼模式背景颜色 */
+}
+
+/* 深色模式背景 */
+.markdown-content.dark-mode {
+    background-color: #000000; /* 深色模式背景颜色 */
+    color: #ffffff; /* 深色模式文字颜色 */
+}
+
+/* 优先级：深色模式 > 护眼模式 */
+.markdown-content.dark-mode.eye-care-mode {
+    background-color: #000000; /* 仍然保持深色模式背景颜色 */
+    color: #ffffff; /* 深色模式文字颜色 */
+}
+
+/* 护眼模式切换按钮样式 */
+.button-eye-care {
+    margin: 20px 0; /* 上下外边距20px，左右外边距为0 */
+    background-color: #007bff; /* 按钮背景色 */
+    color: white;   /* 按钮文字颜色 */
+    border: none;   /* 去掉按钮边框 */
+    padding: 10px 20px; /* 按钮内边距 */
+    border-radius: 4px; /* 按钮圆角 */
+    cursor: pointer; /* 鼠标悬停时显示为手型 */
+    transition: background-color 0.3s; /* 背景色过渡效果 */
+}
+
+.button-eye-care:hover {
+    background-color: #0056b3; /* 鼠标悬停时的背景色 */
+}

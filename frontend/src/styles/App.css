@@ -1,0 +1,15 @@
+/* src/styles/HomePage.css */
+@import 'themes.css';
+
+
+.home-page {
+  display: flex;
+  flex-direction: row;
+}
+
+/* src/styles/HomePage.css */
+.main-content {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}

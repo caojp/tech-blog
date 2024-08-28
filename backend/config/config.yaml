@@ -1,0 +1,7 @@
+ServerPort: ":8080"
+ContentDir: "../posts"
+
+LOG:
+  LEVEL: "debug"
+  ROTATE_DAYS: 7
+  FORMAT: "json"

@@ -1,0 +1,89 @@
+/* src/styles/TopNav.css */
+
+/* 顶部导航栏 */
+/* 其他样式保持不变 */
+
+.top-nav {
+    width: 100%;
+    background-color: #2485ff; /* 导航栏背景色 */
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 60px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* 暗模式样式 */
+.top-nav.dark-mode {
+    background-color: #333; /* 暗模式的导航栏背景色 */
+}
+
+
+/* 左侧区域的容器 */
+.top-nav-left {
+    display: flex;
+    align-items: center; /* 垂直居中对齐 */
+    flex: 0 0 20%; /* 占据 20% 宽度 */
+}
+
+/* 右侧区域的容器 */
+.top-nav-right {
+    align-items: center; /* 垂直居中对齐 */
+    flex: 1; /* 占据剩余的空间 */
+    justify-content: flex-end; /* 右对齐内容 */
+    margin-left: auto; /* 将右侧区域推到左侧区域的右边 */
+}
+
+/* 标题样式 */
+.top-title {
+    color: #ffffff; /* 标题文字颜色 */
+    font-size: 1.6em; /* 标题字体大小 */
+    margin-right: 20px; /* 给标题添加右边距以分隔主题切换器和导航项 */
+}
+
+/* 导航列表样式 */
+.nav-list {
+    list-style: none; /* 去除默认的列表样式 */
+    padding: 0; /* 去除默认的内边距 */
+    margin: 0; /* 去除默认的外边距 */
+    display: flex; /* 横向排列导航项 */
+    gap: 20px; /* 导航项之间的间距 */
+}
+
+/* 导航项样式 */
+.nav-item {
+    /* 这里可以添加额外的样式，确保导航项显示良好 */
+}
+
+/* 链接样式 */
+.nav-link {
+    text-decoration: none; /* 去除默认的下划线 */
+    color: #ffffff; /* 链接文字颜色 */
+    font-size: 1em; /* 链接字体大小 */
+}
+
+/* 链接悬停效果 */
+.nav-link:hover {
+    text-decoration: underline; /* 鼠标悬停时显示下划线 */
+}
+
+/* 主题切换器的样式 */
+.theme-switcher {
+    background-color: #ffffff; /* 主题切换器背景色 */
+    color: #2485ff; /* 主题切换器文字颜色 */
+    border: none; /* 去除默认的边框 */
+    padding: 5px 10px; /* 内边距 */
+    font-size: 1em; /* 字体大小 */
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+    border-radius: 4px; /* 圆角 */
+    transition: background-color 0.3s, color 0.3s; /* 平滑过渡效果 */
+}
+
+/* 主题切换器的悬停效果 */
+.theme-switcher:hover {
+    background-color: #f0f0f0; /* 鼠标悬停时背景色 */
+    color: #005fa3; /* 鼠标悬停时文字颜色 */
+}

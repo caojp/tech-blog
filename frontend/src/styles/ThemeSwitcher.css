@@ -1,0 +1,50 @@
+/* src/components/ThemeSwitcher.css */
+
+.theme-switcher {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.theme-switcher:hover {
+    background-color: transparent;
+}
+
+.theme-switch-checkbox {
+    display: none; /* 隐藏复选框 */
+}
+
+.theme-switch-label {
+    display: flex;
+    align-items: center;
+    width: 60px; /* 切换按钮的宽度 */
+    height: 34px; /* 切换按钮的高度 */
+    background: #ffffff; /* 默认背景颜色 */
+    border-radius: 34px; /* 使按钮边角圆滑 */
+    position: relative; /* 使滑块可以相对于它移动 */
+    transition: background 0.3s; /* 背景颜色过渡效果 */
+    overflow: hidden; /* 隐藏超出按钮边界的滑块部分 */
+}
+
+/* 滑块样式 */
+.theme-switch-inner {
+    position: absolute; /* 绝对定位滑块 */
+    top: 4px; /* 初始滑块的位置 */
+    left: 4px; /* 初始滑块的位置 */
+    width: 26px; /* 滑块的宽度 */
+    height: 26px; /* 滑块的高度 */
+    background: #cccccc; /* 滑块的背景颜色 */
+    border-radius: 50%; /* 使滑块成为圆形 */
+    transition: transform 0.3s; /* 滑块移动的过渡效果 */
+}
+
+/* 当复选框被选中时 */
+.theme-switch-checkbox:checked + .theme-switch-label {
+    background: #000000; /* 切换按钮被选中时的背景颜色 */
+}
+
+/* 当复选框被选中时，滑块的位置 */
+.theme-switch-checkbox:checked + .theme-switch-label .theme-switch-inner {
+    transform: translateX(26px); /* 滑块水平移动 */
+}
