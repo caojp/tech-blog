@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TopNav from '../components/TopNav';
 import MarkdownRenderer from '../components/MarkdownRenderer';
-import { fetchCategories, fetchMarkdownContent } from '../api/content';
+import {fetchCategories, fetchMarkdownContent} from '../api/content';
 import SideNav from '../components/SideNav';
 import TableOfContents from '../components/TableOfContents.jsx';
 
@@ -20,6 +20,13 @@ const HomePage = () => {
                 const response = await fetchCategories();
                 if (response.status === 'success') {
                     setCategories(response.data);
+                    const indexOjb = response.data.filter(category => !category.is_dir);
+                    if (indexOjb && indexOjb[0] && indexOjb[0].path) {
+                        const markdownContent = await fetchMarkdownContent(indexOjb[0].path);
+                        setContent(markdownContent.data);
+                    }
+                }else {
+                    console.log("init start failed");
                 }
             } catch (error) {
                 console.error('Failed to fetch categories:', error);
@@ -28,21 +35,24 @@ const HomePage = () => {
 
         fetchData();
     }, []);
-
     const handleCategorySelect = (category) => {
         setActiveCategory(category);
         setSubcategories(category.children || []);
         setActiveFile(null);
-        setContent('');
     };
 
     const handleFileSelect = async (file) => {
         setActiveFile(file);
-        try {
-            const markdownContent = await fetchMarkdownContent(file.path);
-            setContent(markdownContent.data);
-        } catch (error) {
-            console.error('Failed to fetch markdown content:', error);
+        // 检查文件扩展名是否为 .md
+        if (file.path.endsWith('.md')) {
+            try {
+                const markdownContent = await fetchMarkdownContent(file.path);
+                setContent(markdownContent.data);
+            } catch (error) {
+                console.error('Failed to fetch markdown content:', error);
+            }
+        }else {
+            console.log('选择的是一个子类');
         }
     };
 
@@ -61,18 +71,16 @@ const HomePage = () => {
             />
 
             <div className="main-content">
-                {subcategories.length > 0 && (
-                    <SideNav
-                        subcategories={subcategories}
-                        onFileSelect={handleFileSelect}
-                        isDarkMode={isDarkMode}
-                    />
-                )}
+                <SideNav
+                    subcategories={subcategories}
+                    onFileSelect={handleFileSelect}
+                    isDarkMode={isDarkMode}
+                />
 
                 {content && (
                     <>
                         <MarkdownRenderer content={content} setAnchors={setAnchors} isDarkMode={isDarkMode}/>
-                        <TableOfContents anchors={anchors} />
+                        <TableOfContents anchors={anchors}/>
                     </>
                 )}
             </div>

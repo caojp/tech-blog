@@ -1,21 +1,42 @@
-
 .side-nav {
-    width: 10%;
+    width: 20%;
+    height: 100%;
     background-color: #f4f4f4;
     padding: 10px;
     position: fixed;
     top: 70px;
     left: 0;
+    overflow-y: auto; /* 支持垂直滚动 */
 }
 
-/* 暗模式样式 */
 .side-nav.dark-mode {
-    background-color: #333; /* 暗模式的背景色 */
-    color: #fff; /* 暗模式的文字颜色 */
+    background-color: #333; /* 暗模式背景色 */
+    color: #fff; /* 暗模式文字颜色 */
+}
+
+.side-nav .nav-list {
+    list-style: none; /* 移除默认列表样式 */
+    padding-left: 0; /* 去掉左侧内边距 */
+    margin: 0; /* 去掉外边距 */
 }
 
 .side-nav .nav-item {
-    display: block;
-    margin-bottom: 5px;
     cursor: pointer;
+    margin-bottom: 5px; /* 每个项之间的间距 */
+    display: block; /* 确保每个项是块状显示 */
+}
+
+.file-name, .folder-name {
+    display: block; /* 确保每个项是块状显示 */
+    padding: 10px; /* 添加内边距 */
+    border-radius: 4px; /* 圆角效果 */
+    transition: background-color 0.2s; /* 背景色过渡效果 */
+}
+
+/* 鼠标悬停和激活状态样式 */
+.file-name:hover,
+.folder-name:hover,
+.nav-item.active {
+    background-color: #007bff; /* 激活或悬停时的背景颜色 */
+    color: #fff; /* 激活或悬停时的文字颜色 */
 }
