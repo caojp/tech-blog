@@ -26,7 +26,7 @@
 .top-nav-left {
     display: flex;
     align-items: center; /* 垂直居中对齐 */
-    flex: 0 0 20%; /* 占据 20% 宽度 */
+    flex: 0 0 30%; /* 占据 20% 宽度 */
 }
 
 /* 右侧区域的容器 */
@@ -43,6 +43,16 @@
     font-size: 1.6em; /* 标题字体大小 */
     margin-right: 20px; /* 给标题添加右边距以分隔主题切换器和导航项 */
 }
+
+.slogan {
+    color: #ffffff;
+    font-size: .8rem;
+    position: absolute;
+    left: 1.2rem;
+    padding: 2rem 0 0 0;
+    top: 1rem;
+}
+
 
 /* 导航列表样式 */
 .nav-list {
@@ -80,6 +90,8 @@
     cursor: pointer; /* 鼠标悬停时显示手型光标 */
     border-radius: 4px; /* 圆角 */
     transition: background-color 0.3s, color 0.3s; /* 平滑过渡效果 */
+    position: absolute;
+    left: 12rem;
 }
 
 /* 主题切换器的悬停效果 */
