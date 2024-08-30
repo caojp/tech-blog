@@ -80,7 +80,7 @@ const HomePage = () => {
                 {content && (
                     <>
                         <MarkdownRenderer content={content} setAnchors={setAnchors} isDarkMode={isDarkMode}/>
-                        <TableOfContents anchors={anchors}/>
+                        <TableOfContents anchors={anchors} isDarkMode={isDarkMode}/>
                     </>
                 )}
             </div>

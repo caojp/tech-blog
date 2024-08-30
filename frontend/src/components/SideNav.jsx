@@ -5,8 +5,6 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode }) => {
     const [expandedPaths, setExpandedPaths] = useState({});
     const [activePath, setActivePath] = useState(null);
 
-    const sideNavClassName = `side-nav ${isDarkMode ? 'dark-mode' : ''}`;
-
     const toggleExpand = (path) => {
         setExpandedPaths((prev) => ({
             ...prev,
@@ -28,11 +26,15 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode }) => {
                             <>
                                 <div
                                     onClick={() => toggleExpand(subcategory.path)}
-                                    className="folder-name"
+                                    className={`folder-name ${expandedPaths[subcategory.path] ? 'expanded' : ''}`}
                                 >
                                     {subcategory.name}
                                 </div>
-                                {expandedPaths[subcategory.path] && subcategory.children && renderSubcategories(subcategory.children)}
+                                {expandedPaths[subcategory.path] && subcategory.children && (
+                                    <ul className="sub-list">
+                                        {renderSubcategories(subcategory.children)}
+                                    </ul>
+                                )}
                             </>
                         ) : (
                             <div
@@ -48,7 +50,11 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode }) => {
         );
     };
 
-    return <nav className={sideNavClassName}>{renderSubcategories(subcategories)}</nav>;
+    return (
+        <nav className={`side-nav ${isDarkMode ? 'dark-mode' : ''}`}>
+            {renderSubcategories(subcategories)}
+        </nav>
+    );
 };
 
 export default SideNav;

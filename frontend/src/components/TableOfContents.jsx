@@ -1,10 +1,11 @@
 import React from 'react';
 import '../styles/TableOfContents.css'; // 引入样式文件
 
-const TableOfContents = ({ anchors }) => {
+const TableOfContents = ({ anchors, isDarkMode }) => {
     // console.log('Rendering TableOfContents with anchors:', anchors); // Debug log
     return (
-        <div className="table-of-contents">
+
+        <div className={`table-of-contents ${isDarkMode ? 'dark-mode' : ''}`}>
             <ul>
                 {anchors.map((anchor, index) => (
                     <li key={index} className={`toc-level-${anchor.level}`}>

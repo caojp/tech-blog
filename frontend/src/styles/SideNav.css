@@ -1,42 +1,86 @@
 .side-nav {
-    width: 20%;
-    height: 100%;
+    width: 240px; /* Fixed width for consistency */
     background-color: #f4f4f4;
-    padding: 10px;
+    padding: 20px 10px; /* More padding for elegance */
     position: fixed;
     top: 70px;
     left: 0;
-    overflow-y: auto; /* 支持垂直滚动 */
+    height: calc(100% - 70px); /* Full height minus top nav */
+    overflow-y: auto;
+    border-right: 1px solid #ddd; /* Subtle border */
+    transition: background-color 0.3s ease; /* Smooth transition for dark mode */
 }
 
 .side-nav.dark-mode {
-    background-color: #333; /* 暗模式背景色 */
-    color: #fff; /* 暗模式文字颜色 */
+    background-color: #333;
+    color: #fff;
+    border-right: 1px solid #444;
 }
 
-.side-nav .nav-list {
-    list-style: none; /* 移除默认列表样式 */
-    padding-left: 0; /* 去掉左侧内边距 */
-    margin: 0; /* 去掉外边距 */
+.side-nav .nav-list,
+.side-nav .sub-list {
+    display: block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .side-nav .nav-item {
+    margin-bottom: 5px;
+    display: block;
+}
+
+.folder-name,
+.file-name {
+    display: block; /* Ensures the items stack in a column */
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
     cursor: pointer;
-    margin-bottom: 5px; /* 每个项之间的间距 */
-    display: block; /* 确保每个项是块状显示 */
+    color: #333; /* Default text color */
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.file-name, .folder-name {
-    display: block; /* 确保每个项是块状显示 */
-    padding: 10px; /* 添加内边距 */
-    border-radius: 4px; /* 圆角效果 */
-    transition: background-color 0.2s; /* 背景色过渡效果 */
+.side-nav.dark-mode .folder-name,
+.side-nav.dark-mode .file-name {
+    color: #f4f4f4; /* Light text color for dark mode */
 }
 
-/* 鼠标悬停和激活状态样式 */
-.file-name:hover,
+.folder-name.expanded {
+    font-weight: bold;
+}
+
 .folder-name:hover,
-.nav-item.active {
-    background-color: #007bff; /* 激活或悬停时的背景颜色 */
-    color: #fff; /* 激活或悬停时的文字颜色 */
+.file-name:hover {
+    background-color: #e0e0e0;
+    color: #007bff;
+}
+
+.side-nav.dark-mode .folder-name:hover,
+.side-nav.dark-mode .file-name:hover {
+    background-color: #555; /* Darker hover background */
+    color: #fff; /* Light text color on hover */
+}
+
+.file-name.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.side-nav .sub-list {
+    padding-left: 15px; /* Indentation for nested items */
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.file-name.active,
+.folder-name.expanded {
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+.side-nav.dark-mode .file-name.active,
+.side-nav.dark-mode .folder-name.expanded {
+    background-color: #007bff;
+    color: #fff; /* Light text color for active items */
 }
