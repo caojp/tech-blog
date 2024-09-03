@@ -25,8 +25,11 @@ backend/
 启动服务器
 ```shell
 
-
+执行打包脚本
 ```
+powershell -ExecutionPolicy Bypass -File .\build.ps1
+```
+
 访问swagger
 ```shell
 http://localhost:8080/swagger/index.html

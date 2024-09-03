@@ -1,4 +1,6 @@
 // src/api/request.js
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const apiRequest = async (url, method = 'GET', body = null) => {
     try {
         const options = {
@@ -12,7 +14,7 @@ export const apiRequest = async (url, method = 'GET', body = null) => {
             options.body = JSON.stringify(body);
         }
 
-        const response = await fetch(url, options);
+        const response = await fetch(`${API_URL}${url}`, options);
 
         if (!response.ok) {
             throw new Error(`Error: ${response.status} ${response.statusText}`);

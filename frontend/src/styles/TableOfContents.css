@@ -58,3 +58,41 @@
     font-size: 1em; /* 三级标题字体正常 */
     color: #333; /* 确保文字颜色足够对比度 */
 }
+
+
+/* 添加折叠按钮的样式 */
+.table-of-contents .toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background-color: #007acc; /* 折叠按钮背景色 */
+    color: #fff; /* 折叠按钮文字颜色 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 1em; /* 使按钮和内容有间距 */
+    font-size: 18px; /* 字体大小 */
+}
+
+/* 折叠按钮中的横线样式 */
+.table-of-contents .toggle-button::before {
+    content: '+'; /* 折叠状态时显示十字符号 */
+    display: block;
+    font-size: 25px; /* 十字符号字体大小 */
+    color: #fff; /* 十字颜色 */
+}
+
+/* 展开状态的样式 */
+.table-of-contents:not(.collapsed) .toggle-button::before {
+    content: '-'; /* 展开状态时显示十字符号 */
+    font-size: 25px; /* 十字符号字体大小 */
+}
+
+/* 折叠状态的样式 */
+.table-of-contents.collapsed {
+    max-height: 25px; /* 折叠时高度限制 */
+    overflow: hidden; /* 隐藏超出内容 */
+}
+

@@ -19,6 +19,8 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+posts
+posts/*
 /backend/*.log
 /backend/log/
 
