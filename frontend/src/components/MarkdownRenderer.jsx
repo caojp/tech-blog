@@ -42,16 +42,19 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
     }, []);
 
     useEffect(() => {
+        if (content) {
+            setContentReady(false); // 在加载新内容时将contentReady设置为false
+            setLocalAnchors([]); // 清空localAnchors
+            setContentReady(true); // 渲染新内容后再将contentReady设置为true
+        }
+    }, [content]);
+
+    useEffect(() => {
         if (contentReady) {
             setAnchors(localAnchors);
         }
-    }, [localAnchors, setAnchors, contentReady]);
+    }, [localAnchors, contentReady, setAnchors]);
 
-    useEffect(() => {
-        setContentReady(true);
-    }, [content]);
-
-    // Determine the correct class for markdown content based on isDarkMode and eyeCareMode
     const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''}`;
 
     return (
@@ -71,7 +74,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
                         const id = `hash-${hash}`;
                         useEffect(() => {
                             addAnchor(1, id, text);
-                        }, [id, text]);
+                        }, [id, text, addAnchor]);
                         return <h1 id={id} {...props} />;
                     },
                     h2: ({ node, ...props }) => {
@@ -80,7 +83,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
                         const id = `hash-${hash}`;
                         useEffect(() => {
                             addAnchor(2, id, text);
-                        }, [id, text]);
+                        }, [id, text, addAnchor]);
                         return <h2 id={id} {...props} />;
                     },
                     h3: ({ node, ...props }) => {
@@ -89,7 +92,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
                         const id = `hash-${hash}`;
                         useEffect(() => {
                             addAnchor(3, id, text);
-                        }, [id, text]);
+                        }, [id, text, addAnchor]);
                         return <h3 id={id} {...props} />;
                     },
                     a: ({ node, ...props }) => (
