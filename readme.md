@@ -1,17 +1,127 @@
-
-# 技术探秘者博客网站
+# TechBlog 技术探秘者博客网站
 
 探索技术世界的奥秘，分享技术发现与心得。
 
 ## 项目简介
 
-本项目是一个简单的博客网站，使用 Go 语言的 Gin 框架作为后端，前端使用 React.js。
+TechBlog是一个简单的博客网站，使用 Go 语言的 Gin 框架作为后端，前端使用 React.js。
 后端项目在启动的时候可以通过-config 执行markdown文件的目录，作为网站导航和内容，该网站能够读取markdown目录作为网站导航，顶部导航栏显示目录结构，右侧显示导航下面子分类，点击文件名可显示 Markdown 文章内容。
 
-常规模式
+**网站内容目录**
 
-![项目运行页面截图](image/img.png)
-暗黑模式
+```shell
+TECH-BLOG\POSTS
+│   index.md                               // 主页显示的内容
+│
+├───c-sharp                                // 一级目录 顶部导航栏（TopNav） 显示父类目
+│       Centos8 安装dotnet6.md             // 二级以下的目录和文件 都会显示在左侧导航栏(SideNav) ，如果是markdown文件，点击后会在中间文档显示区域显示内容。如果左侧是目录，可以折叠，展开显示。
+│
+├───golang                                // 二级目录显示在左侧
+│   │   Go_Language_Learning_Plan.md      // 二级目录下面的markdown文档，点击后可以显示文档内容。
+│   │
+│   ├───基础
+│   │       post1.md
+│   │
+│   ├───框架
+│   │   ├───beego          // 三级目录会显示在左侧导航栏
+│   │   ├───gin
+│   │   └───orm
+│   └───高级
+│           golang常见的10种设计模式.md
+│
+├───java
+│   ├───基础
+│   │   │   base.md
+│   │   │
+│   │   └───基础
+│   ├───面向对象
+│   │       obj.md
+│   │
+│   └───高级
+│           type.md
+│
+├───kubernetes
+├───linux
+│   │   Linux 系统内存和进程内存分析.md
+│   │
+│   ├───内核
+│   │       post1.md
+│   │
+│   ├───命令
+│   │       post1.md
+│   │
+│   └───网络
+│           post1.md
+│
+├───openstack
+├───python
+│   │   post1.md
+│   │
+│   ├───基础
+│   │       post1.md
+│   │
+│   ├───框架
+│   │       post1.md
+│   │       Tornado.md
+│   │
+│   ├───爬虫
+│   │       post1.md
+│   │
+│   └───高级
+│           post1.md
+│
+└───前段
+    ├───CSS
+    │       post1.md
+    │
+    ├───HTML
+    │       post1.md
+    │
+    ├───JS
+    │       post1.md
+    │
+    ├───React
+    │       post1.md
+    │
+    ├───Vue
+    │       post1.md
+    │
+    └───小程序
+            post1.md
+
+```
+
+### 后端打包后启动
+```shell
+cd backend
+go build -o tech-blog
+chmod u+x tech-blog
+./tech-blog -config config/config.yaml
+```
+在config.yaml中配置好网站目录:
+```yaml
+ServerPort: ":8080"
+ContentDir: "../posts"
+LOG:
+   LEVEL: "debug"
+   ROTATE_DAYS: 7
+   FORMAT: "json"
+```
+- ServerPort： 服务器启动端口
+- ContentDir： 就是网站存放markdown的内容目录
+- LOG： 日志配置项
+
+
+#### 常规模式
+
+![项目运行页面截图](image/img_normal.png)
+
+#### 护眼模式
+
+![项目运行页面截图](image/eye-care-img.png)
+
+#### 暗黑模式
+
 ![暗黑模式](image/dark_mode.png)
 
 ### 功能
@@ -22,8 +132,6 @@
 - 支持开启黑暗模式
 - 支持左侧菜单折叠
 - 显示markdown文档的时候，右侧有当前文档导航
-
-
 
 ## 技术栈
 
@@ -81,13 +189,11 @@
    ```bash
    cd frontend
    ```
-
 2. 安装依赖
 
    ```bash
    npm install
    ```
-
 3. 启动开发服务器
 
    ```bash
@@ -101,17 +207,13 @@
    ```bash
    cd backend
    ```
-
 2. 安装依赖
 
    ```bash
    go mod tidy
    ```
-
 3. 启动服务器
 
    ```bash
    go run main.go
    ```
-
-
