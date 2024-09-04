@@ -15,7 +15,7 @@ const TableOfContents = ({ anchors, isDarkMode }) => {
 
     return (
 
-        <div className={`table-of-contents ${isDarkMode ? 'dark-mode' : ''}${collapsed ? 'collapsed' : ''}`}>
+        <div className={`table-of-contents ${isDarkMode ? 'dark-mode' : ''} ${collapsed ? 'collapsed' : ''}`}>
             <button className="toggle-button" onClick={handleToggle}></button>
             <ul>
                 {anchors.map((anchor, index) => (

@@ -1,4 +1,3 @@
-/* TableOfContents.css */
 .table-of-contents {
     margin: 1em 0;
     padding: 1em;
@@ -18,6 +17,7 @@
 .table-of-contents.dark-mode {
     background-color: #333;
     color: #fff;
+    border-color: #555; /* 改变边框颜色以适应暗模式 */
 }
 
 .table-of-contents ul {
@@ -32,14 +32,18 @@
 
 .table-of-contents a {
     text-decoration: none; /* 去除链接下划线 */
-    color: #007acc; /* 链接颜色 */
+    color: #249ded; /* 链接颜色 */
     font-weight: normal; /* 链接文字正常粗细 */
     transition: color 0.3s ease; /* 链接颜色平滑过渡效果 */
 }
 
+.table-of-contents.dark-mode a {
+    color:  #249ded;
+}
+
 .table-of-contents a:hover {
     text-decoration: underline; /* 悬停时显示下划线 */
-    color: #0056a0; /* 悬停时颜色稍暗 */
+    color: #559ad1; /* 悬停时颜色稍暗 */
 }
 
 /* 为不同级别的标题设置不同的缩进 */
@@ -58,7 +62,6 @@
     font-size: 1em; /* 三级标题字体正常 */
     color: #333; /* 确保文字颜色足够对比度 */
 }
-
 
 /* 添加折叠按钮的样式 */
 .table-of-contents .toggle-button {
@@ -86,8 +89,8 @@
 
 /* 展开状态的样式 */
 .table-of-contents:not(.collapsed) .toggle-button::before {
-    content: '-'; /* 展开状态时显示十字符号 */
-    font-size: 25px; /* 十字符号字体大小 */
+    content: '-'; /* 展开状态时显示减号符号 */
+    font-size: 25px; /* 减号符号字体大小 */
 }
 
 /* 折叠状态的样式 */
@@ -96,3 +99,42 @@
     overflow: hidden; /* 隐藏超出内容 */
 }
 
+/* Dark mode specific styles */
+.table-of-contents.dark-mode .toggle-button {
+    background-color: #555; /* 暗模式下按钮的背景颜色 */
+    color: #fff; /* 暗模式下按钮文字的颜色 */
+}
+
+/* Dark mode toggle button content */
+.table-of-contents.dark-mode .toggle-button::before {
+    color: #fff; /* 暗模式下的十字或减号颜色 */
+}
+
+/* Dark mode with collapsed state */
+.table-of-contents.dark-mode.collapsed {
+    background-color: #333; /* 确保折叠时背景颜色一致 */
+    border-color: #555; /* 折叠状态下的边框颜色 */
+}
+
+
+/* 修改默认的链接颜色 */
+a {
+    color: #007acc; /* 默认链接颜色 */
+    text-decoration: none; /* 去掉下划线 */
+}
+
+/* 悬停时的颜色 */
+a:hover {
+    color: #0056a0; /* 悬停时的颜色 */
+    text-decoration: underline; /* 悬停时显示下划线 */
+}
+
+/* 访问过的链接颜色 */
+a:visited {
+    color: #aa6be3; /* 访问过的链接颜色 */
+}
+
+/* 活动链接的颜色 */
+a:active {
+    color: #ff6600; /* 点击时的颜色 */
+}

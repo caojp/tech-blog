@@ -2,30 +2,43 @@
 .markdown-content {
     flex: 1;
     position: absolute;
-    left: 10%;
+    left: 280px;
     top: 70px;
+    max-width: 1920px;
     padding: 50px 100px 120px 100px;
+    margin: 0 20px;
     background-color: #ffffff; /* 默认背景颜色 */
     background-size: cover;
     transition: background-color 0.3s, background-image 0.3s;
-    max-width: 1920px;
 }
 
 /* 护眼模式背景 */
 .markdown-content.eye-care-mode {
     background-color: #f0f8f0; /* 护眼模式背景颜色 */
+    max-width: 1920px;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
 }
 
 /* 深色模式背景 */
 .markdown-content.dark-mode {
     background-color: #000000; /* 深色模式背景颜色 */
     color: #ffffff; /* 深色模式文字颜色 */
+    max-width: 1920px;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
 }
 
 /* 优先级：深色模式 > 护眼模式 */
 .markdown-content.dark-mode.eye-care-mode {
     background-color: #000000; /* 仍然保持深色模式背景颜色 */
     color: #ffffff; /* 深色模式文字颜色 */
+    max-width: 1920px;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
 }
 
 /* 护眼模式切换按钮样式 */
