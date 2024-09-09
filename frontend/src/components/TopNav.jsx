@@ -9,7 +9,7 @@ const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme }) => {
         <nav className={`top-nav ${isDarkMode ? 'dark-mode' : ''}`}>
             <div className="top-nav-left">
                 <h1 className="top-title">TechBlog</h1>
-                <p className="slogan">技术探秘者 探索技术世界的奥秘，分享技术发现与心得。</p>
+                {/*<p className="slogan">技术探秘者 探索技术世界的奥秘，分享技术发现与心得。</p>*/}
                 <ThemeSwitcher isDarkMode={isDarkMode} onChange={toggleTheme} />
             </div>
             <div className="top-nav-right">
