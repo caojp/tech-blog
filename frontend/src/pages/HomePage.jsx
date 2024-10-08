@@ -13,6 +13,8 @@ const HomePage = () => {
     const [activeFile, setActiveFile] = useState(null);
     const [anchors, setAnchors] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isSideNavVisible, setIsSideNavVisible] = useState(true);  // 新增状态控制 SideNav 显示
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,6 +63,12 @@ const HomePage = () => {
         document.body.classList.toggle('dark-mode', !isDarkMode);
     };
 
+    // 添加一个函数来切换 SideNav 的可见性
+    const toggleSideNav = () => {
+        setIsSideNavVisible(!isSideNavVisible);
+    };
+
+
     return (
         <div className={`home-page ${isDarkMode ? 'dark-mode' : ''}`}>
             <TopNav
@@ -68,14 +76,18 @@ const HomePage = () => {
                 onCategorySelect={handleCategorySelect}
                 isDarkMode={isDarkMode}
                 toggleTheme={toggleTheme}
+                isSideNavCollapsed={isSideNavVisible}
+                toggleSideNav={toggleSideNav}
             />
 
             <div className="main-content">
-                <SideNav
-                    subcategories={subcategories}
-                    onFileSelect={handleFileSelect}
-                    isDarkMode={isDarkMode}
-                />
+                {isSideNavVisible && (
+                    <SideNav
+                        subcategories={subcategories}
+                        onFileSelect={handleFileSelect}
+                        isDarkMode={isDarkMode}
+                    />
+                )}
 
                 {content && (
                     <>

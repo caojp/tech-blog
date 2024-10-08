@@ -99,3 +99,52 @@
     background-color: #f0f0f0; /* 鼠标悬停时背景色 */
     color: #005fa3; /* 鼠标悬停时文字颜色 */
 }
+
+.toggle-button{
+    width: 45px;
+    height: 45px;
+    background: azure;
+    border-radius: 10px; /* 圆角 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 阴影 */
+    cursor: pointer;
+}
+
+/* 设定按钮内部的三条线 */
+.lines {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 24px; /* 线条总高度 */
+    transition: all 0.3s ease;
+}
+
+.line {
+    width: 25px;
+    height: 4px;
+    background-color: #333 !important; /* 线条颜色 */
+    border-radius: 2px;
+    position: relative;
+}
+
+/* 中间线条包含箭头 */
+.line.arrow::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid #333 !important; /* 右箭头 */
+    transition: all 0.3s ease; /* 平滑动画 */
+}
+
+/* 当折叠时，箭头向左 */
+.collapsed .arrow::after {
+    border-left: none;
+    border-right: 6px solid #333 !important; /* 左箭头 */
+    right: 0;
+    left: -10px;
+}

@@ -1,14 +1,8 @@
-/* src/components/ThemeSwitcher.css */
-
 .theme-switcher {
-    background-color: transparent;
+    background-color: transparent; /* 移除背景色 */
     display: flex;
     align-items: center;
     cursor: pointer;
-}
-
-.theme-switcher:hover {
-    background-color: transparent;
 }
 
 .theme-switch-checkbox {
@@ -20,31 +14,42 @@
     align-items: center;
     width: 60px; /* 切换按钮的宽度 */
     height: 34px; /* 切换按钮的高度 */
-    background: #ffffff; /* 默认背景颜色 */
-    border-radius: 34px; /* 使按钮边角圆滑 */
-    position: relative; /* 使滑块可以相对于它移动 */
+    position: relative; /* 为了让内部图标居中 */
     transition: background 0.3s; /* 背景颜色过渡效果 */
-    overflow: hidden; /* 隐藏超出按钮边界的滑块部分 */
+    justify-content: center; /* 图标居中 */
 }
 
-/* 滑块样式 */
+/* 图标样式 */
 .theme-switch-inner {
-    position: absolute; /* 绝对定位滑块 */
-    top: 4px; /* 初始滑块的位置 */
-    left: 4px; /* 初始滑块的位置 */
-    width: 26px; /* 滑块的宽度 */
-    height: 26px; /* 滑块的高度 */
-    background: #cccccc; /* 滑块的背景颜色 */
-    border-radius: 50%; /* 使滑块成为圆形 */
-    transition: transform 0.3s; /* 滑块移动的过渡效果 */
+    position: relative; /* 相对定位图标 */
+    width: 100%; /* 覆盖整个按钮宽度 */
+    height: 100%; /* 覆盖整个按钮高度 */
+    display: flex;
+    justify-content: center; /* 图标居中对齐 */
+    align-items: center;
+    padding: 0 10px; /* 内边距 */
 }
 
-/* 当复选框被选中时 */
-.theme-switch-checkbox:checked + .theme-switch-label {
-    background: #000000; /* 切换按钮被选中时的背景颜色 */
+.icon {
+    font-size: 24px; /* 图标大小 */
+    transition: opacity 0.3s ease; /* 平滑的淡入淡出动画 */
+    position: absolute; /* 绝对定位，重叠显示太阳和月亮 */
+    opacity: 0; /* 默认图标不可见 */
 }
 
-/* 当复选框被选中时，滑块的位置 */
-.theme-switch-checkbox:checked + .theme-switch-label .theme-switch-inner {
-    transform: translateX(26px); /* 滑块水平移动 */
+/* 太阳图标默认可见 */
+.sun {
+    opacity: 1;
+    color: #f39c12; /* 太阳的颜色 */
+}
+
+/* 复选框未选中时显示太阳图标，隐藏月亮图标 */
+.theme-switch-checkbox:checked + .theme-switch-label .sun {
+    opacity: 0; /* 选中时隐藏太阳 */
+}
+
+/* 复选框选中时显示月亮图标，隐藏太阳图标 */
+.theme-switch-checkbox:checked + .theme-switch-label .moon {
+    opacity: 1; /* 选中时显示月亮 */
+    color: #f1c40f; /* 月亮的颜色 */
 }
