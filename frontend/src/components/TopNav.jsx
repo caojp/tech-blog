@@ -1,27 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/TopNav.css';
 import ThemeSwitcher from './ThemeSwitcher.jsx';
 
 const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideNavCollapsed, toggleSideNav }) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);  // 新增状态控制菜单展开/收起
     const filteredCategories = categories.filter(category => category.is_dir);
 
     return (
         <nav className={`top-nav ${isDarkMode ? 'dark-mode' : ''}`}>
             <div className="top-nav-left">
                 <h1 className="top-title">TechBlog</h1>
-                {/* 添加一个折叠/展开按钮 */}
+
+                {/* 折叠/展开按钮 */}
                 <div className="toggle-button" onClick={toggleSideNav}>
-                    {/* 切换箭头方向 */}
                     <div className={`lines ${isSideNavCollapsed ? 'collapsed' : ''}`}>
                         <div className="line"></div>
-                        <div className="line arrow"></div> {/* 中间的箭头行 */}
+                        <div className="line arrow"></div>
                         <div className="line"></div>
                     </div>
                 </div>
-                {/*<p className="slogan">技术探秘者 探索技术世界的奥秘，分享技术发现与心得。</p>*/}
+
                 <ThemeSwitcher isDarkMode={isDarkMode} onChange={toggleTheme} />
+
+                {/* 移动端汉堡菜单按钮 */}
+                <div className="hamburger-menu" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                    <span className="bar"></span>
+                </div>
             </div>
-            <div className="top-nav-right">
+
+            {/* 菜单列表，移动端通过 isMenuOpen 控制 */}
+            <div className={`top-nav-right ${isMenuOpen ? 'open' : ''}`}>
                 <ul className="nav-list">
                     {filteredCategories.map((category) => (
                         <li key={category.path} className="nav-item">

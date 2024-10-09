@@ -91,7 +91,12 @@ const HomePage = () => {
 
                 {content && (
                     <>
-                        <MarkdownRenderer content={content} setAnchors={setAnchors} isDarkMode={isDarkMode}/>
+                        <MarkdownRenderer
+                            content={content}
+                            setAnchors={setAnchors}
+                            isDarkMode={isDarkMode}
+                            isSideNavCollapsed={isSideNavVisible}
+                        />
                         <TableOfContents anchors={anchors} isDarkMode={isDarkMode}/>
                     </>
                 )}

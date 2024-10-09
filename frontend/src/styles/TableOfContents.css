@@ -138,3 +138,51 @@ a:visited {
 a:active {
     color: #ff6600; /* 点击时的颜色 */
 }
+
+
+/* 小屏幕样式 */
+@media (max-width: 768px) {
+    .table-of-contents {
+        top: 50px;
+        right: 0;
+        width: 80%;
+        max-width: 100%;
+        border-radius: 0;
+        max-height: none;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .table-of-contents.collapsed {
+        height: auto;
+        width: 5%;
+    }
+
+    .table-of-contents .toggle-button {
+        font-size: 18px;
+        padding: 10px;
+    }
+
+    .table-of-contents ul {
+        padding: 10px;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
+    .table-of-contents li {
+        margin: 0.3em 0;
+    }
+
+    .toc-level-1 {
+        font-size: 1em;
+    }
+
+    .toc-level-2 {
+        margin-left: 10px;
+        font-size: 0.9em;
+    }
+
+    .toc-level-3 {
+        margin-left: 20px;
+        font-size: 0.8em;
+    }
+}

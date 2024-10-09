@@ -1,11 +1,7 @@
-/* src/styles/TopNav.css */
-
-/* 顶部导航栏 */
-/* 其他样式保持不变 */
-
+/* 顶部导航栏保持不变，添加媒体查询 */
 .top-nav {
     width: 100%;
-    background-color: #2485ff; /* 导航栏背景色 */
+    background-color: #2485ff;
     padding: 10px 20px;
     position: fixed;
     top: 0;
@@ -18,23 +14,27 @@
 
 /* 暗模式样式 */
 .top-nav.dark-mode {
-    background-color: #333; /* 暗模式的导航栏背景色 */
+    background-color: #333;
 }
 
-
-/* 左侧区域的容器 */
+/* 左侧区域保持不变 */
 .top-nav-left {
     display: flex;
-    align-items: center; /* 垂直居中对齐 */
-    flex: 0 0 30%; /* 占据 20% 宽度 */
+    align-items: center;
+    flex-basis: 20%; /* 左侧区域占用 20% 宽度 */
 }
 
-/* 右侧区域的容器 */
+/* 右侧区域在大屏幕下保持不变 */
 .top-nav-right {
-    align-items: center; /* 垂直居中对齐 */
-    flex: 1; /* 占据剩余的空间 */
-    justify-content: flex-end; /* 右对齐内容 */
-    margin-left: auto; /* 将右侧区域推到左侧区域的右边 */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-basis: 80%; /* 右侧区域占用剩余宽度 */
+}
+
+/* 隐藏右侧导航菜单（移动端） */
+.top-nav-right.open {
+    display: block;
 }
 
 /* 标题样式 */
@@ -44,35 +44,20 @@
     margin-right: 20px; /* 给标题添加右边距以分隔主题切换器和导航项 */
 }
 
-/*.slogan {*/
-/*    color: #ffffff;*/
-/*    font-size: .8rem;*/
-/*    position: absolute;*/
-/*    left: 1.2rem;*/
-/*    padding: 2rem 0 0 0;*/
-/*    top: 1rem;*/
-/*}*/
 
-
-/* 导航列表样式 */
+/* 导航列表 */
 .nav-list {
-    list-style: none; /* 去除默认的列表样式 */
-    padding: 0; /* 去除默认的内边距 */
-    margin: 0; /* 去除默认的外边距 */
-    display: flex; /* 横向排列导航项 */
-    gap: 20px; /* 导航项之间的间距 */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
 }
 
-/* 导航项样式 */
-.nav-item {
-    /* 这里可以添加额外的样式，确保导航项显示良好 */
-}
-
-/* 链接样式 */
 .nav-link {
-    text-decoration: none; /* 去除默认的下划线 */
-    color: #ffffff; /* 链接文字颜色 */
-    font-size: 1em; /* 链接字体大小 */
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1em;
 }
 
 /* 链接悬停效果 */
@@ -80,6 +65,22 @@
     text-decoration: underline; /* 鼠标悬停时显示下划线 */
 }
 
+/* 汉堡菜单样式 */
+.hamburger-menu {
+    display: none; /* 默认不显示，只有在移动端显示 */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 25px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.hamburger-menu .bar {
+    height: 3px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+}
 /* 主题切换器的样式 */
 .theme-switcher {
     background-color: #ffffff; /* 主题切换器背景色 */
@@ -124,7 +125,7 @@
 .line {
     width: 25px;
     height: 4px;
-    background-color: #333 !important; /* 线条颜色 */
+    background-color: #333 ; /* 线条颜色 */
     border-radius: 2px;
     position: relative;
 }
@@ -133,18 +134,51 @@
 .line.arrow::after {
     content: "";
     position: absolute;
-    right: -10px;
-    top: 0;
+    right: -6px;
+    top: -2px;
     border-top: 4px solid transparent;
     border-bottom: 4px solid transparent;
-    border-left: 6px solid #333 !important; /* 右箭头 */
+    border-left: 6px solid #333; /* 右箭头 */
     transition: all 0.3s ease; /* 平滑动画 */
 }
 
 /* 当折叠时，箭头向左 */
-.collapsed .arrow::after {
+.collapsed .line.arrow::after {
     border-left: none;
-    border-right: 6px solid #333 !important; /* 左箭头 */
-    right: 0;
-    left: -10px;
+    border-right: 6px solid #333; /* 左箭头 */
+    right: 23px;
+    top: -2px;
+}
+
+
+
+/* 媒体查询: 当宽度小于768px时，显示汉堡菜单，隐藏导航栏 */
+@media (max-width: 768px) {
+    .nav-list {
+        display: none; /* 隐藏菜单列表 */
+        flex-direction: column;
+        position: absolute;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        background-color: #2485ff;
+        padding: 10px;
+    }
+
+    .top-nav-right.open .nav-list {
+        display: flex; /* 点击汉堡菜单后显示列表 */
+    }
+
+    .hamburger-menu {
+        display: flex; /* 在小屏幕显示汉堡菜单 */
+    }
+
+    .top-title {
+        flex: 1; /* 调整标题位置，确保汉堡菜单有空间 */
+    }
+
+    .theme-switcher {
+        position: static; /* 使主题切换器位于正常流中 */
+        margin-left: auto;
+    }
 }

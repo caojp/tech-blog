@@ -4,12 +4,24 @@
     position: absolute;
     left: 280px;
     top: 70px;
-    max-width: 1835px;
-    padding: 50px 100px 120px 100px;
     margin: 0 20px;
     background-color: #ffffff; /* 默认背景颜色 */
     background-size: cover;
     transition: background-color 0.3s, background-image 0.3s;
+    max-width: 1835px;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
+}
+
+.markdown-content.collapsed {
+    position: absolute;
+    left: 0;
+    top: 70px;
+    max-width: 1835px;
+    min-height: 100%;
+    width: 100%;
+    height: auto;
 }
 
 /* 护眼模式背景 */
@@ -55,4 +67,52 @@
 
 .button-eye-care:hover {
     background-color: #0056b3; /* 鼠标悬停时的背景色 */
+}
+
+
+/* 针对小于768px宽度的设备（例如手机竖屏）的样式 */
+@media (max-width: 768px) {
+    .markdown-content {
+        position: static; /* 移除绝对定位，使其适应移动设备 */
+        left: 0;
+        top: 0;
+        margin: 0 10px; /* 减少左右的外边距 */
+        width: 100%; /* 让内容宽度适应屏幕 */
+        height: auto;
+    }
+
+    /* 护眼模式、深色模式保持不变，但调整为移动设备的适应性 */
+    .markdown-content.eye-care-mode,
+    .markdown-content.dark-mode,
+    .markdown-content.dark-mode.eye-care-mode {
+        margin: 0 10px; /* 调整移动设备的左右边距 */
+        width: 100%;
+    }
+    .markdown-content.collapsed {
+        position: absolute;
+        left: 0;
+        min-height: 100%;
+        width: 100%;
+        height: auto;
+    }
+
+    /* 调整护眼模式切换按钮在移动设备上的样式 */
+    .button-eye-care {
+        margin: 10px 0; /* 上下外边距缩小一点 */
+        padding: 8px 16px; /* 按钮的内边距变小，适应移动设备 */
+        font-size: 14px; /* 缩小字体 */
+    }
+
+    /* 调整标题文字大小，让其在手机上更清晰 */
+    h1 {
+        font-size: 24px; /* 调整H1标题大小 */
+    }
+
+    h2 {
+        font-size: 20px; /* 调整H2标题大小 */
+    }
+
+    h3 {
+        font-size: 18px; /* 调整H3标题大小 */
+    }
 }

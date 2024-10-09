@@ -26,7 +26,7 @@ const hashString = (str) => {
     return hash >>> 0;
 };
 
-const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
+const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed}) => {
     const [localAnchors, setLocalAnchors] = useState([]);
     const [contentReady, setContentReady] = useState(false);
     const [eyeCareMode, setEyeCareMode] = useState(false);
@@ -55,7 +55,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode }) => {
         }
     }, [localAnchors, contentReady, setAnchors]);
 
-    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''}`;
+    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavCollapsed ? 'collapsed' : ''}`;
 
     return (
         <div className={markdownClass}>
