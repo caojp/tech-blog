@@ -83,7 +83,7 @@
 }
 /* 主题切换器的样式 */
 .theme-switcher {
-    background-color: #ffffff; /* 主题切换器背景色 */
+    /*background-color: #ffffff; !* 主题切换器背景色 *!*/
     color: #2485ff; /* 主题切换器文字颜色 */
     border: none; /* 去除默认的边框 */
     padding: 5px 10px; /* 内边距 */
@@ -97,7 +97,7 @@
 
 /* 主题切换器的悬停效果 */
 .theme-switcher:hover {
-    background-color: #f0f0f0; /* 鼠标悬停时背景色 */
+    /*background-color: #f0f0f0; !* 鼠标悬停时背景色 *!*/
     color: #005fa3; /* 鼠标悬停时文字颜色 */
 }
 
