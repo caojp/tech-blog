@@ -97,6 +97,7 @@
 .table-of-contents.collapsed {
     max-height: 25px; /* 折叠时高度限制 */
     overflow: hidden; /* 隐藏超出内容 */
+    width: 25px;
 }
 
 /* Dark mode specific styles */
