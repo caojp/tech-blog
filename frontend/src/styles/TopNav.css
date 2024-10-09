@@ -58,6 +58,8 @@
     text-decoration: none;
     color: #ffffff;
     font-size: 1em;
+    font-weight: bold;
+    font-family: sans-serif;
 }
 
 /* 链接悬停效果 */

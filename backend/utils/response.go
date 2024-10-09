@@ -16,7 +16,7 @@ func SuccessResponse(c *gin.Context, data interface{}) {
 	})
 }
 
-// ErrorResponse 发送错误响应
+// ErrorResponseFunc ErrorResponse 发送错误响应
 func ErrorResponseFunc(c *gin.Context, code int, message string) {
 	c.JSON(code, ErrorResponse{
 		Status:  "error",
