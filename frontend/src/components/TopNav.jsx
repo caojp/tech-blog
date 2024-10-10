@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/TopNav.css';
 import ThemeSwitcher from './ThemeSwitcher.jsx';
 
 const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideNavCollapsed, toggleSideNav }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);  // 新增状态控制菜单展开/收起
     const filteredCategories = categories.filter(category => category.is_dir);
+    const navigate = useNavigate();
+
+    const handleTitleClick = () => {
+        console.log('Title clicked!'); // 确保事件被触发
+        navigate('/');
+    };
+
 
     return (
         <nav className={`top-nav ${isDarkMode ? 'dark-mode' : ''}`}>
             <div className="top-nav-left">
-                <h1 className="top-title">TechBlog</h1>
+                <h1 className="top-title" onClick={handleTitleClick}>
+                    TechBlog
+                </h1>
 
                 {/* 折叠/展开按钮 */}
                 <div className="toggle-button" onClick={toggleSideNav}>

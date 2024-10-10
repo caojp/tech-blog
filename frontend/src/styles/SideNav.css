@@ -3,12 +3,13 @@
     background-color: #f4f4f4;
     padding: 20px 10px; /* More padding for elegance */
     position: fixed;
-    top: 40px;
+    top: 62px;
     left: 0;
     height: calc(100% - 70px); /* Full height minus top nav */
     overflow-y: auto;
     border-right: 1px solid #ddd; /* Subtle border */
     transition: background-color 0.3s ease; /* Smooth transition for dark mode */
+    z-index: 1;
 }
 
 .side-nav.dark-mode {
