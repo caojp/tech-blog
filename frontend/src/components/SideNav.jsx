@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/SideNav.css';
 
-const SideNav = ({ subcategories, onFileSelect, isDarkMode }) => {
+const SideNav = ({ subcategories, onFileSelect, isDarkMode,toggleSideNav}) => {
     const [expandedPaths, setExpandedPaths] = useState({});
     const [activePath, setActivePath] = useState(null);
 
@@ -39,7 +39,12 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode }) => {
                         ) : (
                             <div
                                 className={`file-name ${activePath === subcategory.path ? 'active' : ''}`}
-                                onClick={() => handleFileSelect(subcategory)}
+                                onClick={
+                                () => {
+                                    toggleSideNav();
+                                    handleFileSelect(subcategory)
+                                    }
+                                }
                             >
                                 {subcategory.name}
                             </div>

@@ -2,7 +2,6 @@
 .markdown-content {
     flex: 1;
     position: absolute;
-    left: 280px;
     top: 70px;
     margin: 0 20px;
     background-color: #ffffff; /* 默认背景颜色 */
@@ -10,17 +9,18 @@
     transition: background-color 0.3s, background-image 0.3s;
     max-width: 1835px;
     min-height: 100%;
-    width: 100%;
+    width: 90%;
     height: auto;
+    padding-bottom: 10px;
 }
 
 .markdown-content.collapsed {
     position: absolute;
-    left: 0;
+    left: 3%;
     top: 70px;
     max-width: 1835px;
     min-height: 100%;
-    width: 100%;
+    width: 90%;
     height: auto;
 }
 
@@ -29,7 +29,7 @@
     background-color: #f0f8f0; /* 护眼模式背景颜色 */
     max-width: 1835px;
     min-height: 100%;
-    width: 100%;
+    width: 90%;
     height: auto;
 }
 
@@ -39,7 +39,7 @@
     color: #ffffff; /* 深色模式文字颜色 */
     max-width: 1835px;
     min-height: 100%;
-    width: 100%;
+    width: 90%;
     height: auto;
 }
 
@@ -49,7 +49,7 @@
     color: #ffffff; /* 深色模式文字颜色 */
     max-width: 1835px;
     min-height: 100%;
-    width: 100%;
+    width: 90%;
     height: auto;
 }
 
@@ -74,11 +74,12 @@
 @media (max-width: 768px) {
     .markdown-content {
         position: static; /* 移除绝对定位，使其适应移动设备 */
-        left: 0;
+        left: 3%;
         top: 0;
         margin: 0 10px; /* 减少左右的外边距 */
-        width: 95%; /* 让内容宽度适应屏幕 */
+        width: 0; /* 让内容宽度适应屏幕 */
         height: auto;
+        padding-bottom: 10px;
     }
 
     /* 护眼模式、深色模式保持不变，但调整为移动设备的适应性 */

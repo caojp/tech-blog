@@ -30,33 +30,53 @@
     display: block;
 }
 
-.folder-name,
+.folder-name{
+    display: block; /* Ensures the items stack in a column */
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    color: #fff; /* Default text color */
+    background: #62A4F1;
+    transition: background-color 0.3s, color 0.3s;
+}
 .file-name {
     display: block; /* Ensures the items stack in a column */
     padding: 8px 12px;
     border-radius: 4px;
     font-size: 0.9em;
     cursor: pointer;
-    color: #333; /* Default text color */
+    color: #000; /* Default text color */
+    background: #fff;
     transition: background-color 0.3s, color 0.3s;
 }
 
-.side-nav.dark-mode .folder-name,
+.side-nav.dark-mode .folder-name{
+    color: #fff;
+    background: #62A4F1;
+}
 .side-nav.dark-mode .file-name {
     color: #f4f4f4; /* Light text color for dark mode */
+    background: #007bff ;
 }
 
 .folder-name.expanded {
     font-weight: bold;
 }
 
-.folder-name:hover,
+.folder-name:hover{
+    background-color: #559ad1;
+    color: #fff;
+}
 .file-name:hover {
-    background-color: #e0e0e0;
-    color: #007bff;
+    background-color: #249ded;
+    color: #fff;
 }
 
-.side-nav.dark-mode .folder-name:hover,
+.side-nav.dark-mode .folder-name:hover{
+    background-color: #555; /* Darker hover background */
+    color: #fff; /* Light text color on hover */
+}
 .side-nav.dark-mode .file-name:hover {
     background-color: #555; /* Darker hover background */
     color: #fff; /* Light text color on hover */
@@ -75,7 +95,7 @@
 
 .file-name.active,
 .folder-name.expanded {
-    background-color: #ddd;
+    background-color: #0056b3;
     font-weight: bold;
 }
 
@@ -83,4 +103,30 @@
 .side-nav.dark-mode .folder-name.expanded {
     background-color: #007bff;
     color: #fff; /* Light text color for active items */
+}
+
+
+/* 适用于手机窄屏的媒体查询 */
+@media (max-width: 768px) {
+    .side-nav .nav-list,
+    .side-nav .sub-list {
+        display: block; /* 确保子文件夹和文件是块级元素，垂直排列 */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: static; /* 确保元素没有绝对定位 */
+    }
+    /*.side-nav .nav-item {*/
+    /*    margin-bottom: 5px;*/
+    /*    display: block; !* 保证 nav-item 块级显示，垂直排列 *!*/
+    /*    position: relative; !* 相对定位，确保不重叠 *!*/
+    /*}*/
+    .side-nav .sub-list {
+        padding-left: 15px; /* 确保嵌套列表有适当的缩进 */
+        margin-top: 5px;
+        margin-bottom: 5px;
+        display: block; /* 确保子文件夹垂直排列 */
+        position: relative; /* 相对定位 */
+        overflow: visible; /* 确保子元素不被隐藏 */
+    }
 }

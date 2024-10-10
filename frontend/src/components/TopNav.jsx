@@ -40,6 +40,12 @@ const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideN
                                 onClick={(e) => {
                                     e.preventDefault();
                                     onCategorySelect(category);
+                                    // 点击后折叠汉堡菜单
+                                    setIsMenuOpen(false);
+                                    // 如果 SideNav 是折叠的，则展开它
+                                    if (!isSideNavCollapsed) {
+                                        toggleSideNav();  // 如果 SideNav 已经折叠，则展开
+                                    }
                                 }}
                                 className="nav-link"
                             >

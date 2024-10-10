@@ -13,7 +13,7 @@ const HomePage = () => {
     const [activeFile, setActiveFile] = useState(null);
     const [anchors, setAnchors] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [isSideNavVisible, setIsSideNavVisible] = useState(true);  // 新增状态控制 SideNav 显示
+    const [isSideNavVisible, setIsSideNavVisible] = useState(false);  // 新增状态控制 SideNav 显示
 
 
     useEffect(() => {
@@ -86,6 +86,7 @@ const HomePage = () => {
                         subcategories={subcategories}
                         onFileSelect={handleFileSelect}
                         isDarkMode={isDarkMode}
+                        toggleSideNav={toggleSideNav}
                     />
                 )}
 
