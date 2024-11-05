@@ -116,4 +116,9 @@
     h3 {
         font-size: 18px; /* 调整H3标题大小 */
     }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
 }

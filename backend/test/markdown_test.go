@@ -11,7 +11,8 @@ import (
 
 func init() {
 	// 初始化配置
-	config.InitConfig()
+	configPath := "D:\\Projects\\golang-project\\tech-blog\\backend\\config\\config.yaml"
+	config.InitConfig(configPath)
 }
 
 func TestGetContentDir(t *testing.T) {
