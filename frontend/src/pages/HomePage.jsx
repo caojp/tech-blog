@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import TopNav from '../components/TopNav';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import {fetchCategories, fetchMarkdownContent} from '../api/content';
@@ -19,33 +20,61 @@ const HomePage = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [content, setContent] = useState('');
-    const [activeCategory, setActiveCategory] = useState(null);
-    const [activeFile, setActiveFile] = useState(null);
+    // 这两个 state 当前仅记录选中项（setter 被调用），值预留给后续高亮功能，暂不读取。
+    const [, setActiveCategory] = useState(null);
+    const [, setActiveFile] = useState(null);
     const [anchors, setAnchors] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
-    const [isSideNavVisible, setIsSideNavVisible] = useState(false);  // 新增状态控制 SideNav 显示
+    const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [searchParams, setSearchParams] = useSearchParams();
 
+    // loadMarkdown 加载指定文章内容，统一管理 loading / error 状态。
+    const loadMarkdown = useCallback(async (filePath) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const markdownContent = await fetchMarkdownContent(filePath);
+            setContent(markdownContent.data);
+        } catch (err) {
+            console.error('Failed to fetch markdown content:', err);
+            setError('文章加载失败，请稍后重试。');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
+            setError(null);
             try {
                 const response = await fetchCategories();
                 if (response.status === 'success') {
                     setCategories(response.data);
-                    const indexOjb = response.data.filter(category => !category.is_dir);
-                    if (indexOjb && indexOjb[0] && indexOjb[0].path) {
-                        const markdownContent = await fetchMarkdownContent(indexOjb[0].path);
-                        setContent(markdownContent.data);
+                    // 优先从 URL 恢复上次阅读的文章，否则展示首页 index.md
+                    const pathFromUrl = searchParams.get('path');
+                    const target = pathFromUrl
+                        ? { path: pathFromUrl }
+                        : response.data.find(category => !category.is_dir);
+                    if (target && target.path) {
+                        await loadMarkdown(target.path);
                     }
-                }else {
-                    console.log("init start failed");
+                } else {
+                    setError('初始化失败，请稍后重试。');
                 }
-            } catch (error) {
-                console.error('Failed to fetch categories:', error);
+            } catch (err) {
+                console.error('Failed to fetch categories:', err);
+                setError('目录加载失败，请稍后重试。');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
+        // 仅在挂载时执行：URL 变化不应触发重新拉取目录树。
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // 应用主题到 body 并持久化到 localStorage。
@@ -55,36 +84,28 @@ const HomePage = () => {
         localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
     }, [isDarkMode]);
 
-    const handleCategorySelect = (category) => {
+    const handleCategorySelect = useCallback((category) => {
         setActiveCategory(category);
         setSubcategories(category.children || []);
         setActiveFile(null);
-    };
+    }, []);
 
-    const handleFileSelect = async (file) => {
+    const handleFileSelect = useCallback((file) => {
         setActiveFile(file);
-        // 检查文件扩展名是否为 .md
         if (file.path.endsWith('.md')) {
-            try {
-                const markdownContent = await fetchMarkdownContent(file.path);
-                setContent(markdownContent.data);
-            } catch (error) {
-                console.error('Failed to fetch markdown content:', error);
-            }
-        }else {
-            console.log('选择的是一个子类');
+            // 将文章路径写入 URL，支持刷新恢复与链接分享。
+            setSearchParams({ path: file.path }, { replace: true });
+            loadMarkdown(file.path);
         }
-    };
+    }, [setSearchParams, loadMarkdown]);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         setIsDarkMode(prev => !prev);
-    };
+    }, []);
 
-    // 添加一个函数来切换 SideNav 的可见性
-    const toggleSideNav = () => {
-        setIsSideNavVisible(!isSideNavVisible);
-    };
-
+    const toggleSideNav = useCallback(() => {
+        setIsSideNavOpen(prev => !prev);
+    }, []);
 
     return (
         <div className={`home-page ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -93,12 +114,12 @@ const HomePage = () => {
                 onCategorySelect={handleCategorySelect}
                 isDarkMode={isDarkMode}
                 toggleTheme={toggleTheme}
-                isSideNavCollapsed={isSideNavVisible}
+                isSideNavOpen={isSideNavOpen}
                 toggleSideNav={toggleSideNav}
             />
 
             <div className="main-content">
-                {isSideNavVisible && (
+                {isSideNavOpen && (
                     <SideNav
                         subcategories={subcategories}
                         onFileSelect={handleFileSelect}
@@ -107,13 +128,15 @@ const HomePage = () => {
                     />
                 )}
 
-                {content && (
+                {loading && <div className="status-message">加载中...</div>}
+                {error && <div className="status-message error">{error}</div>}
+                {content && !loading && !error && (
                     <>
                         <MarkdownRenderer
                             content={content}
                             setAnchors={setAnchors}
                             isDarkMode={isDarkMode}
-                            isSideNavCollapsed={isSideNavVisible}
+                            isSideNavOpen={isSideNavOpen}
                         />
                         <TableOfContents anchors={anchors} isDarkMode={isDarkMode}/>
                     </>

@@ -40,3 +40,22 @@
   flex-direction: row;
   width: 100%;
 }
+
+/* 加载与错误提示 */
+.status-message {
+  padding: 2rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+.status-message.error {
+  color: #d33;
+}
+
+.dark-mode .status-message {
+  color: #999;
+}
+
+.dark-mode .status-message.error {
+  color: #ff6b6b;
+}

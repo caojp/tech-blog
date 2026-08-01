@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/TopNav.css';
 import ThemeSwitcher from './ThemeSwitcher.jsx';
 
-const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideNavCollapsed, toggleSideNav }) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);  // 新增状态控制菜单展开/收起
+const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideNavOpen, toggleSideNav }) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);  // 状态控制菜单展开/收起
     const filteredCategories = categories.filter(category => category.is_dir);
     const navigate = useNavigate();
 
     const handleTitleClick = () => {
-        console.log('Title clicked!'); // 确保事件被触发
         navigate('/');
     };
 
@@ -23,7 +22,7 @@ const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideN
 
                 {/* 折叠/展开按钮 */}
                 <div className="toggle-button" onClick={toggleSideNav}>
-                    <div className={`lines ${isSideNavCollapsed ? 'collapsed' : ''}`}>
+                    <div className={`lines ${isSideNavOpen ? 'collapsed' : ''}`}>
                         <div className="line"></div>
                         <div className="line arrow"></div>
                         <div className="line"></div>
@@ -52,9 +51,9 @@ const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideN
                                     onCategorySelect(category);
                                     // 点击后折叠汉堡菜单
                                     setIsMenuOpen(false);
-                                    // 如果 SideNav 是折叠的，则展开它
-                                    if (!isSideNavCollapsed) {
-                                        toggleSideNav();  // 如果 SideNav 已经折叠，则展开
+                                    // 如果 SideNav 未展开，则展开它
+                                    if (!isSideNavOpen) {
+                                        toggleSideNav();
                                     }
                                 }}
                                 className="nav-link"
@@ -67,6 +66,6 @@ const TopNav = ({ categories, onCategorySelect, isDarkMode, toggleTheme, isSideN
             </div>
         </nav>
     );
-}
+};
 
-export default TopNav;
+export default memo(TopNav);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 import '../styles/TableOfContents.css'; // 引入样式文件
 
 const TableOfContents = ({ anchors, isDarkMode }) => {
@@ -44,4 +44,4 @@ const TableOfContents = ({ anchors, isDarkMode }) => {
     );
 };
 
-export default TableOfContents;
+export default memo(TableOfContents);

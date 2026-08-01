@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -57,11 +57,14 @@ const slugify = (text) => {
         .replace(/\s+/g, '-');
 };
 
-const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed }) => {
+const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) => {
     const containerRef = useRef(null);
     const [eyeCareMode, setEyeCareMode] = useState(false);
 
     // 内容渲染完成后，从 DOM 提取标题并生成锚点。
+    // 之前的实现把 useEffect 写在 react-markdown 的 components.h1/h2/h3 回调里，
+    // 违反了 React Hooks 规则（Hooks 不能在回调/嵌套函数中调用），
+    // 会导致锚点错乱甚至运行时报错。改为在渲染后统一从 DOM 提取。
     useEffect(() => {
         if (!containerRef.current) return;
 
@@ -74,6 +77,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed 
             const level = parseInt(heading.tagName.substring(1), 10);
             let id = heading.id || slugify(text) || `heading-${anchors.length}`;
 
+            // 同文档内重复标题追加序号，避免 id 冲突导致目录跳转错误
             if (usedIds.has(id)) {
                 let counter = 1;
                 while (usedIds.has(`${id}-${counter}`)) counter++;
@@ -88,7 +92,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed 
         setAnchors(anchors);
     }, [content, setAnchors]);
 
-    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavCollapsed ? 'collapsed' : ''}`;
+    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
 
     return (
         <div className={markdownClass} ref={containerRef}>
@@ -101,12 +105,12 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed 
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    a: ({ node, ...props }) => (
+                    a: ({ ...props }) => (
                         <a {...props} target="_blank" rel="noopener noreferrer">
                             {props.children}
                         </a>
                     ),
-                    code({ node, inline, className, children, ...props }) {
+                    code({ inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
                         return !inline && match ? (
                             <SyntaxHighlighter
@@ -131,4 +135,4 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed 
     );
 };
 
-export default MarkdownRenderer;
+export default memo(MarkdownRenderer);

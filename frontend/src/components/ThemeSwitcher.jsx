@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import '../styles/ThemeSwitcher.css'; // 引入样式文件
 
 const ThemeSwitcher = ({ isDarkMode, onChange }) => {
@@ -21,4 +21,4 @@ const ThemeSwitcher = ({ isDarkMode, onChange }) => {
     );
 };
 
-export default ThemeSwitcher;
+export default memo(ThemeSwitcher);

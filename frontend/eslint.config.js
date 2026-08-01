@@ -29,6 +29,9 @@ export default [
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
+      // 项目使用 JSX 而非 TypeScript，不采用 PropTypes 做类型检查，
+      // 关闭该规则以避免对每个组件强制声明 PropTypes。
+      'react/prop-types': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

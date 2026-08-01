@@ -1,5 +1,4 @@
 // src/components/ContentNav.jsx
-import React from 'react';
 
 const ContentNav = ({ headings }) => {
     return (
