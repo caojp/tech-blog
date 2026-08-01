@@ -1,0 +1,7 @@
+# 默认所有者
+# 修改为你自己的 GitHub 用户名
+*       @caojp
+
+# 按目录指定所有者（可选）
+/backend/    @caojp
+/frontend/   @caojp

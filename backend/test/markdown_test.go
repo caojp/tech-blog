@@ -1,8 +1,6 @@
 package test
 
 import (
-	"backend/config"
-	"backend/routes"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -11,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/caojp/tech-blog/backend/config"
+	"github.com/caojp/tech-blog/backend/routes"
 )
 
 // init 初始化测试所需的全局配置（加载真实 config.yaml 以复用日志等配置）。

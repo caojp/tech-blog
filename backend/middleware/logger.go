@@ -1,13 +1,14 @@
 package logger
 
 import (
-	"backend/config"
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
 	"time"
+
+	"github.com/caojp/tech-blog/backend/config"
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var Log *logrus.Logger // 全局的日志记录器

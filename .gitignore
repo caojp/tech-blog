@@ -1,29 +1,52 @@
-.idea/
-/frontend/node_modules
-/frontend/dist
+# === Go ===
+backend/tech-blog
+backend/tech-blog.exe
+backend/*.log
+backend/log/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
 
-# local env files
-.env.local
-.env.*.local
-
-# Log files
+# === Node.js ===
+node_modules/
+frontend/node_modules/
+frontend/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# === 环境变量（含敏感信息） ===
+.env
+.env.local
+.env.*.local
+
+# === 日志 ===
+*.log
 logfile.log
 
-# Editor directories and files
-.idea
-.vscode
+# === IDE / 编辑器 ===
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-posts
+
+# === 操作系统 ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === 构建产物 ===
+/backend/bin/
+/frontend/dist/
+
+# === 运行时内容目录（用户自行创建，不入版本库） ===
 posts/*
-/backend/*.log
-/backend/log/
-
-
-
+!posts/.gitkeep

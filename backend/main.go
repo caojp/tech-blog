@@ -1,14 +1,14 @@
 package main
 
 import (
-	"backend/config"
-	"backend/routes"
+	"github.com/caojp/tech-blog/backend/config"
+	"github.com/caojp/tech-blog/backend/routes"
 	"flag"
 	"fmt"
 	"github.com/swaggo/files"       // swagger embed files
 	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 
-	_ "backend/docs" // 必须导入你的 docs 包，自动生成文档需要使用这个
+	_ "github.com/caojp/tech-blog/backend/docs" // 必须导入你的 docs 包，自动生成文档需要使用这个
 )
 
 func main() {

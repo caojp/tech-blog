@@ -1,4 +1,4 @@
-module backend
+module github.com/caojp/tech-blog/backend
 
 go 1.22.5
 

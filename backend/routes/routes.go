@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"backend/controllers"
-	"backend/middleware" // 导入 logger 包
+	"github.com/caojp/tech-blog/backend/controllers"
+	logger "github.com/caojp/tech-blog/backend/middleware" // 导入 logger 包
 	"github.com/gin-gonic/gin"
 )
 

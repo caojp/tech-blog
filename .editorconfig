@@ -1,0 +1,30 @@
+# EditorConfig: https://editorconfig.org
+# 统一不同 IDE/编辑器的缩进、换行、编码规则
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Go 文件：tab 缩进
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Makefile 必须用 tab
+[Makefile]
+indent_style = tab
+
+# Markdown 保留行尾空格（换行符）
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# YAML
+[*.{yml,yaml}]
+indent_size = 2

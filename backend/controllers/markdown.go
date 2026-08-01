@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"backend/config"
-	logger "backend/middleware"
-	"backend/payloads"
-	"backend/services"
-	"backend/utils"
+	"github.com/caojp/tech-blog/backend/config"
+	logger "github.com/caojp/tech-blog/backend/middleware"
+	"github.com/caojp/tech-blog/backend/payloads"
+	"github.com/caojp/tech-blog/backend/services"
+	"github.com/caojp/tech-blog/backend/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"

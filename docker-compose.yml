@@ -1,0 +1,12 @@
+services:
+  tech-blog:
+    build: .
+    container_name: tech-blog
+    ports:
+      - "8080:8080"
+    volumes:
+      # 挂载你的 Markdown 内容目录
+      - ./posts:/app/posts
+      # 挂载配置文件（可选，覆盖镜像内默认配置）
+      - ./backend/config.yaml:/app/backend/config.yaml
+    restart: unless-stopped
