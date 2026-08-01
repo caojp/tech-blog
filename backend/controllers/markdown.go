@@ -6,12 +6,48 @@ import (
 	"backend/payloads"
 	"backend/services"
 	"backend/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
+
+// resolveSafePath 解析目标路径并确保它位于配置的 ContentDir 范围内，
+// 防止通过 "../" 或绝对路径进行路径穿越攻击。
+// 返回值是经过 Clean 与符号链接解析后的绝对路径。
+func resolveSafePath(target string) (string, error) {
+	baseDir, err := filepath.Abs(config.AppConfig.ContentDir)
+	if err != nil {
+		return "", err
+	}
+	// 解析 baseDir 的符号链接（目录不存在时退回原值）
+	if resolved, err := filepath.EvalSymlinks(baseDir); err == nil {
+		baseDir = resolved
+	}
+
+	abs, err := filepath.Abs(target)
+	if err != nil {
+		return "", err
+	}
+	abs = filepath.Clean(abs)
+	// 解析目标路径的符号链接（文件不存在时退回原值，避免影响后续读取的报错判断）
+	if resolved, err := filepath.EvalSymlinks(abs); err == nil {
+		abs = resolved
+	}
+
+	rel, err := filepath.Rel(baseDir, abs)
+	if err != nil {
+		return "", err
+	}
+	// 相对路径为 ".." 或以 "../" 开头，说明目标在 ContentDir 之外
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", fmt.Errorf("path %q is outside content dir", target)
+	}
+	return abs, nil
+}
 
 // GetContentDir godoc
 // @Summary Get directory contents
@@ -30,9 +66,10 @@ func GetContentDir(c *gin.Context) {
 		dirPath = defaultDir // 使用配置文件中的默认路径
 	}
 
-	// 确保路径是有效的
-	absDirPath, err := filepath.Abs(dirPath)
+	// 确保路径在 ContentDir 范围内，防止路径穿越
+	absDirPath, err := resolveSafePath(dirPath)
 	if err != nil {
+		logger.Log.Warnf("Reject unsafe path: %v", err)
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid path")
 		return
 	}
@@ -59,73 +96,50 @@ func GetContentDir(c *gin.Context) {
 func GetMarkdownContent(c *gin.Context) {
 	var requestData payloads.RequestData
 
-	//// 使用 io.ReadAll 读取请求体
-	//rawData, err := io.ReadAll(c.Request.Body)
-	//if err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Failed to read request body"})
-	//	return
-	//}
-	//
-	//// 打印原始请求体
-	//logger.Log.Debug("Raw JSON data:", string(rawData))
-
-	// 重新设置请求体，以便之后的 BindJSON 可以再次读取
-	//c.Request.Body = io.NopCloser(strings.NewReader(string(rawData)))
-
 	// 绑定 JSON 数据到结构体
 	if err := c.BindJSON(&requestData); err != nil {
-		// 打印错误信息
-		logger.Log.Errorf("JSON解析错误: %v\n", err)
+		logger.Log.Errorf("JSON解析错误: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid JSON format"})
 		return
 	}
 
 	filePath := requestData.FilePath
-	logger.Log.Debug("FilePath:", filePath)
+	logger.Log.Debugf("FilePath: %s", filePath)
 
-	logger.Log.Debug("Raw file path: ", filePath)
 	if filePath == "" {
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid path")
 		return
 	}
 
-	// 解码 URL 编码的路径
+	// 解码 URL 编码的路径（兼容前端可能编码的请求）
 	decodedFilePath, err := url.QueryUnescape(filePath)
 	if err != nil {
-		logger.Log.Error("Failed to decode file path: ", err)
+		logger.Log.Errorf("Failed to decode file path: %v", err)
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid file path")
 		return
 	}
 
-	// 使用 logger 记录解码后的路径
-	logger.Log.Debug("Decoded file path: ", decodedFilePath)
-
-	// 确保路径没有多余的斜杠
-	absFilePath, err := filepath.Abs(decodedFilePath)
+	// 校验路径在 ContentDir 范围内，防止路径穿越
+	absFilePath, err := resolveSafePath(decodedFilePath)
 	if err != nil {
-		logger.Log.Error("Failed to convert to absolute path: ", err)
+		logger.Log.Warnf("Reject unsafe file path: %v", err)
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid file path")
 		return
 	}
-
-	// 使用 logger 记录绝对路径
-	logger.Log.Debug("Absolute file path: ", absFilePath)
+	logger.Log.Debugf("Absolute file path: %s", absFilePath)
 
 	// 读取文件内容
 	content, err := services.ReadFile(absFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Log.Error("File not found: ", err)
+			logger.Log.Errorf("File not found: %v", err)
 			utils.ErrorResponseFunc(c, http.StatusNotFound, "File not found")
 		} else {
-			logger.Log.Error("Failed to read file: ", err)
+			logger.Log.Errorf("Failed to read file: %v", err)
 			utils.ErrorResponseFunc(c, http.StatusInternalServerError, "Failed to read file")
 		}
 		return
 	}
-
-	// 使用 logger 记录读取的内容
-	//logger.Log.Debug("File content: ", content)
 
 	utils.SuccessResponse(c, content)
 }

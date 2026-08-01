@@ -41,8 +41,9 @@ func InitLogger() *logrus.Logger {
 			MaxBackups: 5,                    // 保留的旧日志文件数
 		}
 
-		// 配置多路输出，控制台和文件
-		Log.SetOutput(io.MultiWriter(os.Stdout, fileLogger))
+		// 关闭默认输出，避免与下面的 Hook 重复写入日志。
+		// 控制台和文件分别通过各自的 Hook 输出，以支持不同格式（控制台带颜色，文件 JSON）。
+		Log.SetOutput(io.Discard)
 
 		// 配置控制台日志格式为带颜色的TextFormatter
 		consoleFormatter := &CustomTextFormatter{

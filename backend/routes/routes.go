@@ -14,11 +14,9 @@ func SetupRouter() *gin.Engine {
 	// 初始化日志记录器
 	log := logger.InitLogger() // 使用 InitLogger 初始化日志记录器
 
-	// 使用 Logger 中间件，并将日志记录器存储到上下文中
-	router.Use(func(c *gin.Context) {
-		c.Set("logger", log)  // 将 logger 存储到上下文中
-		logger.Logger(log)(c) // 使用 Logger 中间件记录请求
-	})
+	// 注册 Recovery 中间件（捕获 panic 防止进程崩溃）和日志中间件。
+	// 注意：不能在中间件闭包内直接调用 logger.Logger(log)(c)，那会破坏 Gin 的中间件链。
+	router.Use(gin.Recovery(), logger.Logger(log))
 
 	// 路由组
 	api := router.Group("/api")

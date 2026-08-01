@@ -1,64 +1,58 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import '../styles/MarkdownRenderer.css';
 
-const extractTextFromChildren = (children) => {
-    if (typeof children === 'string') {
-        return children;
-    }
-    if (Array.isArray(children)) {
-        return children.map(child => extractTextFromChildren(child)).join('');
-    }
-    if (React.isValidElement(children) && children.props && children.props.children) {
-        return extractTextFromChildren(children.props.children);
-    }
-    return '';
+// slugify 将标题文本转换为可用的 id，支持中英文，并对重复标题自动去重。
+const slugify = (text) => {
+    return String(text)
+        .trim()
+        .toLowerCase()
+        .replace(/[^\w\u4e00-\u9fa5\s-]/g, '')
+        .replace(/\s+/g, '-');
 };
 
-const hashString = (str) => {
-    let hash = 5381;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash * 33) ^ str.charCodeAt(i);
-    }
-    return hash >>> 0;
-};
-
-const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed}) => {
-    const [localAnchors, setLocalAnchors] = useState([]);
-    const [contentReady, setContentReady] = useState(false);
+const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed }) => {
+    const containerRef = useRef(null);
     const [eyeCareMode, setEyeCareMode] = useState(false);
 
-    const addAnchor = useCallback((level, id, text) => {
-        setLocalAnchors(prevAnchors => {
-            const newAnchor = { level, id, text };
-            if (!prevAnchors.find(anchor => anchor.id === id)) {
-                return [...prevAnchors, newAnchor];
+    // 内容渲染完成后，从 DOM 提取标题并生成锚点。
+    // 之前的实现把 useEffect 写在 react-markdown 的 components.h1/h2/h3 回调里，
+    // 违反了 React Hooks 规则（Hooks 不能在回调/嵌套函数中调用），
+    // 会导致锚点错乱甚至运行时报错。改为在渲染后统一从 DOM 提取。
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        const headings = containerRef.current.querySelectorAll('h1, h2, h3');
+        const anchors = [];
+        const usedIds = new Set();
+
+        headings.forEach((heading) => {
+            const text = heading.textContent || '';
+            const level = parseInt(heading.tagName.substring(1), 10);
+            let id = heading.id || slugify(text) || `heading-${anchors.length}`;
+
+            // 同文档内重复标题追加序号，避免 id 冲突导致目录跳转错误
+            if (usedIds.has(id)) {
+                let counter = 1;
+                while (usedIds.has(`${id}-${counter}`)) counter++;
+                id = `${id}-${counter}`;
             }
-            return prevAnchors;
+            usedIds.add(id);
+            heading.id = id;
+
+            anchors.push({ level, id, text });
         });
-    }, []);
 
-    useEffect(() => {
-        if (content) {
-            setContentReady(false); // 在加载新内容时将contentReady设置为false
-            setLocalAnchors([]); // 清空localAnchors
-            setContentReady(true); // 渲染新内容后再将contentReady设置为true
-        }
-    }, [content]);
-
-    useEffect(() => {
-        if (contentReady) {
-            setAnchors(localAnchors);
-        }
-    }, [localAnchors, contentReady, setAnchors]);
+        setAnchors(anchors);
+    }, [content, setAnchors]);
 
     const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavCollapsed ? 'collapsed' : ''}`;
 
     return (
-        <div className={markdownClass}>
+        <div className={markdownClass} ref={containerRef}>
             <button
                 className="button-eye-care"
                 onClick={() => setEyeCareMode(!eyeCareMode)}
@@ -68,33 +62,6 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavCollapsed}
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    h1: ({ node, ...props }) => {
-                        const text = extractTextFromChildren(props.children);
-                        const hash = hashString(text);
-                        const id = `hash-${hash}`;
-                        useEffect(() => {
-                            addAnchor(1, id, text);
-                        }, [id, text, addAnchor]);
-                        return <h1 id={id} {...props} />;
-                    },
-                    h2: ({ node, ...props }) => {
-                        const text = extractTextFromChildren(props.children);
-                        const hash = hashString(text);
-                        const id = `hash-${hash}`;
-                        useEffect(() => {
-                            addAnchor(2, id, text);
-                        }, [id, text, addAnchor]);
-                        return <h2 id={id} {...props} />;
-                    },
-                    h3: ({ node, ...props }) => {
-                        const text = extractTextFromChildren(props.children);
-                        const hash = hashString(text);
-                        const id = `hash-${hash}`;
-                        useEffect(() => {
-                            addAnchor(3, id, text);
-                        }, [id, text, addAnchor]);
-                        return <h3 id={id} {...props} />;
-                    },
                     a: ({ node, ...props }) => (
                         <a {...props} target="_blank" rel="noopener noreferrer">
                             {props.children}
