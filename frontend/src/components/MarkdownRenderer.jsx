@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { okaidia } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { okaidia, oneDark, oneLight, vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import '../styles/MarkdownRenderer.css';
 
 // 按需注册代码高亮语言，避免全量引入 react-syntax-highlighter（原全量包接近 1MB）。
@@ -48,6 +48,9 @@ SyntaxHighlighter.registerLanguage('md', markdownLang);
 SyntaxHighlighter.registerLanguage('csharp', csharp);
 SyntaxHighlighter.registerLanguage('c#', csharp);
 
+// 可选代码高亮风格（按需导入，避免全量引入）
+const highlightStyles = { okaidia, oneDark, oneLight, vscDarkPlus, vs };
+
 // slugify 将标题文本转换为可用的 id，支持中英文，并对重复标题自动去重。
 const slugify = (text) => {
     return String(text)
@@ -60,6 +63,8 @@ const slugify = (text) => {
 const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) => {
     const containerRef = useRef(null);
     const [eyeCareMode, setEyeCareMode] = useState(false);
+    const [highlightStyle, setHighlightStyle] = useState('okaidia');
+    const [copyButtonText, setCopyButtonText] = useState('⎘');
 
     // 内容渲染完成后，从 DOM 提取标题并生成锚点。
     // 之前的实现把 useEffect 写在 react-markdown 的 components.h1/h2/h3 回调里，
@@ -94,14 +99,35 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
 
     const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
 
+    const handleCopyToClipboard = (code) => {
+        navigator.clipboard.writeText(code)
+            .then(() => {
+                setCopyButtonText('✓ 已经复制');
+                setTimeout(() => setCopyButtonText('⎘'), 2000);
+            })
+            .catch((err) => console.error('复制失败:', err));
+    };
+
     return (
         <div className={markdownClass} ref={containerRef}>
-            <button
-                className="button-eye-care"
-                onClick={() => setEyeCareMode(!eyeCareMode)}
-            >
-                {eyeCareMode ? '关闭护眼模式' : '开启护眼模式'}
-            </button>
+            <div className="feature-area">
+                <button className="button-eye-care" onClick={() => setEyeCareMode(!eyeCareMode)}>
+                    {eyeCareMode ? '关闭护眼模式' : '开启护眼模式'}
+                </button>
+                <div className="highlight-style-selector">
+                    <label htmlFor="highlight-style">代码高亮风格: </label>
+                    <select
+                        id="highlight-style"
+                        value={highlightStyle}
+                        onChange={(e) => setHighlightStyle(e.target.value)}
+                    >
+                        {Object.keys(highlightStyles).map((style) => (
+                            <option key={style} value={style}>{style}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -113,20 +139,35 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
                     code({ inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
                         return !inline && match ? (
-                            <SyntaxHighlighter
-                                style={okaidia}
-                                language={match[1]}
-                                PreTag="div"
-                                {...props}
-                            >
-                                {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
+                            <div className="code-container">
+                                <div className="code-header">
+                                    <span className="code-dots">
+                                        <span>🔴</span>
+                                        <span>🟡</span>
+                                        <span>🟢</span>
+                                    </span>
+                                    <button
+                                        className="copy-button"
+                                        onClick={() => handleCopyToClipboard(String(children).replace(/\n$/, ''))}
+                                    >
+                                        {copyButtonText}
+                                    </button>
+                                </div>
+                                <SyntaxHighlighter
+                                    style={highlightStyles[highlightStyle]}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    {...props}
+                                >
+                                    {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
+                            </div>
                         ) : (
                             <code className={className} {...props}>
                                 {children}
                             </code>
                         );
-                    }
+                    },
                 }}
             >
                 {content}
