@@ -7,6 +7,16 @@
     <title>TechBlog</title>
   </head>
   <body>
+    <script>
+      // 在 React 加载前根据已保存的主题设置 body 类，避免主题闪屏（FOUC）。
+      (function () {
+        try {
+          var saved = localStorage.getItem('tech-blog-theme');
+          var dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.body.classList.add(dark ? 'dark-mode' : 'light-mode');
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

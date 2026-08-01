@@ -5,6 +5,16 @@ import {fetchCategories, fetchMarkdownContent} from '../api/content';
 import SideNav from '../components/SideNav';
 import TableOfContents from '../components/TableOfContents.jsx';
 
+const THEME_STORAGE_KEY = 'tech-blog-theme';
+
+// getInitialTheme 读取本地保存的主题偏好，无保存时跟随系统偏好。
+const getInitialTheme = () => {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (saved === 'dark') return true;
+    if (saved === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
 const HomePage = () => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
@@ -12,7 +22,7 @@ const HomePage = () => {
     const [activeCategory, setActiveCategory] = useState(null);
     const [activeFile, setActiveFile] = useState(null);
     const [anchors, setAnchors] = useState([]);
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
     const [isSideNavVisible, setIsSideNavVisible] = useState(false);  // 新增状态控制 SideNav 显示
 
 
@@ -37,6 +47,14 @@ const HomePage = () => {
 
         fetchData();
     }, []);
+
+    // 应用主题到 body 并持久化到 localStorage。
+    useEffect(() => {
+        document.body.classList.remove('dark-mode', 'light-mode');
+        document.body.classList.add(isDarkMode ? 'dark-mode' : 'light-mode');
+        localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
+    }, [isDarkMode]);
+
     const handleCategorySelect = (category) => {
         setActiveCategory(category);
         setSubcategories(category.children || []);
@@ -59,8 +77,7 @@ const HomePage = () => {
     };
 
     const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.body.classList.toggle('dark-mode', !isDarkMode);
+        setIsDarkMode(prev => !prev);
     };
 
     // 添加一个函数来切换 SideNav 的可见性
