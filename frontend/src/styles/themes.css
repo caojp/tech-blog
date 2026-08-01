@@ -56,3 +56,32 @@ body.dark-mode {
   background-color: var(--bg);
   color: var(--text);
 }
+
+/* 护眼模式（亮色）：柔和豆沙绿背景，降低对比度
+   覆盖 --bg / --bg-surface / --bg-hover，全页面生效 */
+body.eye-care-mode:not(.dark-mode) {
+  --bg: #c7edcc;
+  --bg-surface: #dae5d5;
+  --bg-hover: #c0ddc4;
+  --text: #2d3a2e;
+  --text-secondary: #5a6b5c;
+  --border: #b5cdba;
+  --color-primary-soft: #b8d8a0;
+
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* 护眼模式（暗色）：偏暖深色背景 */
+body.eye-care-mode.dark-mode {
+  --bg: #1a1f1a;
+  --bg-surface: #232a23;
+  --bg-hover: #2d362d;
+  --text: #d6e0d6;
+  --text-secondary: #9aa89a;
+  --border: #2d362d;
+  --color-primary-soft: #2a3a2a;
+
+  background-color: var(--bg);
+  color: var(--text);
+}

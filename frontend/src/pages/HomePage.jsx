@@ -7,6 +7,7 @@ import SideNav from '../components/SideNav';
 import TableOfContents from '../components/TableOfContents.jsx';
 
 const THEME_STORAGE_KEY = 'tech-blog-theme';
+const EYE_CARE_STORAGE_KEY = 'tech-blog-eye-care';
 
 // getInitialTheme 读取本地保存的主题偏好，无保存时跟随系统偏好。
 const getInitialTheme = () => {
@@ -14,6 +15,11 @@ const getInitialTheme = () => {
     if (saved === 'dark') return true;
     if (saved === 'light') return false;
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
+// getInitialEyeCare 读取本地保存的护眼模式偏好，默认关闭。
+const getInitialEyeCare = () => {
+    return localStorage.getItem(EYE_CARE_STORAGE_KEY) === 'true';
 };
 
 const HomePage = () => {
@@ -25,7 +31,8 @@ const HomePage = () => {
     const [, setActiveFile] = useState(null);
     const [anchors, setAnchors] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
-    const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+    const [isEyeCareMode, setIsEyeCareMode] = useState(getInitialEyeCare);
+    const [isSideNavOpen, setIsSideNavOpen] = useState(() => window.innerWidth > 768);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -84,6 +91,16 @@ const HomePage = () => {
         localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
     }, [isDarkMode]);
 
+    // 应用护眼模式到 body 并持久化。
+    useEffect(() => {
+        if (isEyeCareMode) {
+            document.body.classList.add('eye-care-mode');
+        } else {
+            document.body.classList.remove('eye-care-mode');
+        }
+        localStorage.setItem(EYE_CARE_STORAGE_KEY, String(isEyeCareMode));
+    }, [isEyeCareMode]);
+
     const handleCategorySelect = useCallback((category) => {
         setActiveCategory(category);
         setSubcategories(category.children || []);
@@ -103,6 +120,10 @@ const HomePage = () => {
         setIsDarkMode(prev => !prev);
     }, []);
 
+    const toggleEyeCare = useCallback(() => {
+        setIsEyeCareMode(prev => !prev);
+    }, []);
+
     const toggleSideNav = useCallback(() => {
         setIsSideNavOpen(prev => !prev);
     }, []);
@@ -114,19 +135,20 @@ const HomePage = () => {
                 onCategorySelect={handleCategorySelect}
                 isDarkMode={isDarkMode}
                 toggleTheme={toggleTheme}
+                isEyeCareMode={isEyeCareMode}
+                toggleEyeCare={toggleEyeCare}
                 isSideNavOpen={isSideNavOpen}
                 toggleSideNav={toggleSideNav}
             />
 
             <div className="main-content">
-                {isSideNavOpen && (
                     <SideNav
                         subcategories={subcategories}
                         onFileSelect={handleFileSelect}
                         isDarkMode={isDarkMode}
                         toggleSideNav={toggleSideNav}
+                        isSideNavOpen={isSideNavOpen}
                     />
-                )}
 
                 {loading && <div className="status-message">加载中...</div>}
                 {error && <div className="status-message error">{error}</div>}

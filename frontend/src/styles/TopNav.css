@@ -3,11 +3,11 @@
   width: 100%;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border);
-  padding: 10px 20px;
+  padding: 0 20px;
   position: fixed;
   top: 0;
   left: 0;
-  height: 40px;
+  height: 56px;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -17,7 +17,7 @@
 .top-nav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-basis: 20%;
 }
 
@@ -35,9 +35,9 @@
 /* 标题 */
 .top-title {
   color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin: 0 20px 0 0;
+  margin: 0 12px 0 0;
   cursor: pointer;
   letter-spacing: 0.5px;
 }
@@ -54,7 +54,7 @@
 .nav-link {
   text-decoration: none;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   padding: 6px 12px;
   border-radius: var(--radius-sm);
@@ -99,8 +99,6 @@
   color: var(--color-primary);
   border: none;
   cursor: pointer;
-  position: absolute;
-  left: 12rem;
 }
 
 .theme-switcher:hover {
@@ -130,7 +128,7 @@
     display: none;
     flex-direction: column;
     position: absolute;
-    top: 60px;
+    top: 56px;
     left: 0;
     width: 100%;
     background-color: var(--bg-surface);
@@ -150,10 +148,5 @@
 
   .top-title {
     flex: 1;
-  }
-
-  .theme-switcher {
-    position: static;
-    margin-left: auto;
   }
 }

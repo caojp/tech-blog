@@ -62,7 +62,6 @@ const slugify = (text) => {
 
 const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) => {
     const containerRef = useRef(null);
-    const [eyeCareMode, setEyeCareMode] = useState(false);
     const [highlightStyle, setHighlightStyle] = useState('okaidia');
     const [copyButtonText, setCopyButtonText] = useState('⎘');
 
@@ -97,7 +96,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
         setAnchors(anchors);
     }, [content, setAnchors]);
 
-    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${eyeCareMode ? 'eye-care-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
+    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
 
     const handleCopyToClipboard = (code) => {
         navigator.clipboard.writeText(code)
@@ -111,9 +110,6 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
     return (
         <div className={markdownClass} ref={containerRef}>
             <div className="feature-area">
-                <button className="button-eye-care" onClick={() => setEyeCareMode(!eyeCareMode)}>
-                    {eyeCareMode ? '关闭护眼模式' : '开启护眼模式'}
-                </button>
                 <div className="highlight-style-selector">
                     <label htmlFor="highlight-style">代码高亮风格: </label>
                     <select
