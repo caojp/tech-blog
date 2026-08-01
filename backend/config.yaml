@@ -1,5 +1,5 @@
 ServerPort: ":8080"
-ContentDir: "./content"
+ContentDir: "../posts"
 
 LOG:
   LEVEL: "info"

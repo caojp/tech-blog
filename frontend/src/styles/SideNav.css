@@ -1,133 +1,91 @@
+/* 侧边导航：柔和透明背景，active 用浅色+左边框而非整块深蓝 */
 .side-nav {
-    width: 240px; /* Fixed width for consistency */
-    background-color: #f4f4f4;
-    padding: 20px 10px; /* More padding for elegance */
-    position: fixed;
-    top: 62px;
-    left: 0;
-    height: calc(100% - 70px); /* Full height minus top nav */
-    overflow-y: auto;
-    border-right: 1px solid #ddd; /* Subtle border */
-    transition: background-color 0.3s ease; /* Smooth transition for dark mode */
-    z-index: 1;
-}
-
-.side-nav.dark-mode {
-    background-color: #333;
-    color: #fff;
-    border-right: 1px solid #444;
+  width: 240px;
+  background-color: var(--bg-surface);
+  padding: 16px 12px;
+  position: fixed;
+  top: 62px;
+  left: 0;
+  height: calc(100% - 70px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  z-index: 50;
 }
 
 .side-nav .nav-list,
 .side-nav .sub-list {
-    display: block;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  display: block;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .side-nav .nav-item {
-    margin-bottom: 5px;
-    display: block;
+  margin-bottom: 2px;
+  display: block;
 }
 
-.folder-name{
-    display: block; /* Ensures the items stack in a column */
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    cursor: pointer;
-    color: #fff; /* Default text color */
-    background: #62A4F1;
-    transition: background-color 0.3s, color 0.3s;
+/* 文件夹：稍粗字体，透明背景 */
+.folder-name {
+  display: block;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+  transition: background-color 0.2s, color 0.2s;
 }
+
+/* 文件：次要文字色，透明背景 */
 .file-name {
-    display: block; /* Ensures the items stack in a column */
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    cursor: pointer;
-    color: #000; /* Default text color */
-    background: #fff;
-    transition: background-color 0.3s, color 0.3s;
+  display: block;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.side-nav.dark-mode .folder-name{
-    color: #fff;
-    background: #62A4F1;
-}
-.side-nav.dark-mode .file-name {
-    color: #f4f4f4; /* Light text color for dark mode */
-    background: #007bff ;
+.folder-name:hover {
+  background-color: var(--bg-hover);
 }
 
-.folder-name.expanded {
-    font-weight: bold;
-}
-
-.folder-name:hover{
-    background-color: #559ad1;
-    color: #fff;
-}
 .file-name:hover {
-    background-color: #249ded;
-    color: #fff;
+  background-color: var(--bg-hover);
+  color: var(--text);
 }
 
-.side-nav.dark-mode .folder-name:hover{
-    background-color: #555; /* Darker hover background */
-    color: #fff; /* Light text color on hover */
-}
-.side-nav.dark-mode .file-name:hover {
-    background-color: #555; /* Darker hover background */
-    color: #fff; /* Light text color on hover */
+/* 展开 / 选中状态：主色文字 + 浅主色背景 */
+.folder-name.expanded {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
 }
 
 .file-name.active {
-    background-color: #007bff;
-    color: #fff;
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+  font-weight: 600;
+  border-left: 3px solid var(--color-primary);
 }
 
 .side-nav .sub-list {
-    padding-left: 15px; /* Indentation for nested items */
-    margin-top: 5px;
-    margin-bottom: 5px;
+  padding-left: 12px;
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
-.file-name.active,
-.folder-name.expanded {
-    background-color: #0056b3;
-    font-weight: bold;
-}
-
-.side-nav.dark-mode .file-name.active,
-.side-nav.dark-mode .folder-name.expanded {
-    background-color: #007bff;
-    color: #fff; /* Light text color for active items */
-}
-
-
-/* 适用于手机窄屏的媒体查询 */
+/* 移动端 */
 @media (max-width: 768px) {
-    .side-nav .nav-list,
-    .side-nav .sub-list {
-        display: block; /* 确保子文件夹和文件是块级元素，垂直排列 */
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        position: static; /* 确保元素没有绝对定位 */
-    }
-    /*.side-nav .nav-item {*/
-    /*    margin-bottom: 5px;*/
-    /*    display: block; !* 保证 nav-item 块级显示，垂直排列 *!*/
-    /*    position: relative; !* 相对定位，确保不重叠 *!*/
-    /*}*/
-    .side-nav .sub-list {
-        padding-left: 15px; /* 确保嵌套列表有适当的缩进 */
-        margin-top: 5px;
-        margin-bottom: 5px;
-        display: block; /* 确保子文件夹垂直排列 */
-        position: relative; /* 相对定位 */
-        overflow: visible; /* 确保子元素不被隐藏 */
-    }
+  .side-nav .sub-list {
+    padding-left: 12px;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    display: block;
+    position: relative;
+    overflow: visible;
+  }
 }

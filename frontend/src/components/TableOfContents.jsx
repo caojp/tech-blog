@@ -32,7 +32,11 @@ const TableOfContents = ({ anchors, isDarkMode }) => {
 
     return (
         <div className={`table-of-contents ${isDarkMode ? 'dark-mode' : ''} ${collapsed ? 'collapsed' : ''}`}>
-            <button className="toggle-button" onClick={handleToggle}></button>
+            <button className="toggle-button" onClick={handleToggle} aria-label="折叠目录">
+                <svg className="toc-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
             <ul>
                 {anchors.map((anchor, index) => (
                     <li key={index} className={`toc-level-${anchor.level}`}>

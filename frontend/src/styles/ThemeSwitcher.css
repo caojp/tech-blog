@@ -1,55 +1,62 @@
+/* 主题切换器：轨道 + SVG 图标 */
 .theme-switcher {
-    background-color: transparent; /* 移除背景色 */
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .theme-switch-checkbox {
-    display: none; /* 隐藏复选框 */
+  display: none;
 }
 
 .theme-switch-label {
-    display: flex;
-    align-items: center;
-    width: 60px; /* 切换按钮的宽度 */
-    height: 34px; /* 切换按钮的高度 */
-    position: relative; /* 为了让内部图标居中 */
-    transition: background 0.3s; /* 背景颜色过渡效果 */
-    justify-content: center; /* 图标居中 */
+  display: flex;
+  align-items: center;
+  width: 52px;
+  height: 28px;
+  position: relative;
+  background-color: var(--bg-hover);
+  border-radius: 999px;
+  transition: background 0.3s;
+  cursor: pointer;
 }
 
-/* 图标样式 */
+/* 选中（暗色）时轨道变主色 */
+.theme-switch-checkbox:checked + .theme-switch-label {
+  background-color: var(--color-primary);
+}
+
 .theme-switch-inner {
-    position: relative; /* 相对定位图标 */
-    width: 100%; /* 覆盖整个按钮宽度 */
-    height: 100%; /* 覆盖整个按钮高度 */
-    display: flex;
-    justify-content: center; /* 图标居中对齐 */
-    align-items: center;
-    padding: 0 10px; /* 内边距 */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .icon {
-    font-size: 24px; /* 图标大小 */
-    transition: opacity 0.3s ease; /* 平滑的淡入淡出动画 */
-    position: absolute; /* 绝对定位，重叠显示太阳和月亮 */
-    opacity: 0; /* 默认图标不可见 */
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
 }
 
 /* 太阳图标默认可见 */
 .sun {
-    opacity: 1;
-    color: #f39c12; /* 太阳的颜色 */
+  opacity: 1;
+  color: #f59e0b;
 }
 
-/* 复选框未选中时显示太阳图标，隐藏月亮图标 */
+/* 选中时切换为月亮 */
 .theme-switch-checkbox:checked + .theme-switch-label .sun {
-    opacity: 0; /* 选中时隐藏太阳 */
+  opacity: 0;
 }
 
-/* 复选框选中时显示月亮图标，隐藏太阳图标 */
 .theme-switch-checkbox:checked + .theme-switch-label .moon {
-    opacity: 1; /* 选中时显示月亮 */
-    color: #f1c40f; /* 月亮的颜色 */
+  opacity: 1;
+  color: #fde68a;
 }

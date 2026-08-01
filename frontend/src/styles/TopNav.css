@@ -1,186 +1,159 @@
-/* 顶部导航栏保持不变，添加媒体查询 */
+/* 顶部导航栏 */
 .top-nav {
-    width: 100%;
-    background-color: #2485ff;
-    padding: 10px 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 40px;
-    z-index: 1;
-    display: flex;
-    align-items: center;
+  width: 100%;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 40px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
 }
 
-/* 暗模式样式 */
-.top-nav.dark-mode {
-    background-color: #333;
-}
-
-/* 左侧区域保持不变 */
 .top-nav-left {
-    display: flex;
-    align-items: center;
-    flex-basis: 20%; /* 左侧区域占用 20% 宽度 */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-basis: 20%;
 }
 
-/* 右侧区域在大屏幕下保持不变 */
 .top-nav-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-basis: 80%; /* 右侧区域占用剩余宽度 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-basis: 80%;
 }
 
-/* 隐藏右侧导航菜单（移动端） */
 .top-nav-right.open {
-    display: block;
+  display: block;
 }
 
-/* 标题样式 */
+/* 标题 */
 .top-title {
-    color: #ffffff; /* 标题文字颜色 */
-    font-size: 1.6em; /* 标题字体大小 */
-    margin-right: 20px; /* 给标题添加右边距以分隔主题切换器和导航项 */
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 20px 0 0;
+  cursor: pointer;
+  letter-spacing: 0.5px;
 }
-
 
 /* 导航列表 */
 .nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 10px;
-    display: flex;
-    gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0 10px;
+  display: flex;
+  gap: 4px;
 }
 
 .nav-link {
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 1em;
-    font-weight: bold;
-    font-family: sans-serif;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s, color 0.2s;
 }
 
-/* 链接悬停效果 */
 .nav-link:hover {
-    text-decoration: underline; /* 鼠标悬停时显示下划线 */
+  background-color: var(--bg-hover);
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
-/* 汉堡菜单样式 */
+/* 折叠/展开按钮（SVG 图标） */
+.toggle-button {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.toggle-button:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.toggle-button.active {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 主题切换器 */
+.theme-switcher {
+  color: var(--color-primary);
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  left: 12rem;
+}
+
+.theme-switcher:hover {
+  color: var(--color-primary-hover);
+}
+
+/* 汉堡菜单（移动端） */
 .hamburger-menu {
-    display: none; /* 默认不显示，只有在移动端显示 */
-    flex-direction: column;
-    justify-content: space-between;
-    width: 25px;
-    height: 20px;
-    cursor: pointer;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  cursor: pointer;
 }
 
 .hamburger-menu .bar {
-    height: 3px;
-    width: 100%;
-    background-color: #ffffff;
-    border-radius: 10px;
-}
-/* 主题切换器的样式 */
-.theme-switcher {
-    /*background-color: #ffffff; !* 主题切换器背景色 *!*/
-    color: #2485ff; /* 主题切换器文字颜色 */
-    border: none; /* 去除默认的边框 */
-    padding: 5px 10px; /* 内边距 */
-    font-size: 1em; /* 字体大小 */
-    cursor: pointer; /* 鼠标悬停时显示手型光标 */
-    border-radius: 4px; /* 圆角 */
-    transition: background-color 0.3s, color 0.3s; /* 平滑过渡效果 */
-    position: absolute;
-    left: 12rem;
+  height: 2px;
+  width: 100%;
+  background-color: var(--text);
+  border-radius: 2px;
 }
 
-/* 主题切换器的悬停效果 */
-.theme-switcher:hover {
-    /*background-color: #f0f0f0; !* 鼠标悬停时背景色 *!*/
-    color: #005fa3; /* 鼠标悬停时文字颜色 */
-}
-
-.toggle-button{
-    width: 45px;
-    height: 45px;
-    background: azure;
-    border-radius: 10px; /* 圆角 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 阴影 */
-    cursor: pointer;
-}
-
-/* 设定按钮内部的三条线 */
-.lines {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 24px; /* 线条总高度 */
-    transition: all 0.3s ease;
-}
-
-.line {
-    width: 25px;
-    height: 4px;
-    background-color: #333 ; /* 线条颜色 */
-    border-radius: 2px;
-    position: relative;
-}
-
-/* 中间线条包含箭头 */
-.line.arrow::after {
-    content: "";
-    position: absolute;
-    right: -6px;
-    top: -2px;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-left: 6px solid #333; /* 右箭头 */
-    transition: all 0.3s ease; /* 平滑动画 */
-}
-
-/* 当折叠时，箭头向左 */
-.collapsed .line.arrow::after {
-    border-left: none;
-    border-right: 6px solid #333; /* 左箭头 */
-    right: 23px;
-    top: -2px;
-}
-
-
-
-/* 媒体查询: 当宽度小于768px时，显示汉堡菜单，隐藏导航栏 */
+/* 移动端 */
 @media (max-width: 768px) {
-    .nav-list {
-        display: none; /* 隐藏菜单列表 */
-        flex-direction: column;
-        position: absolute;
-        top: 40px;
-        left: 0;
-        width: 100%;
-        background-color: #2485ff;
-        padding: 10px;
-    }
+  .nav-list {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px;
+    gap: 2px;
+    box-shadow: var(--shadow);
+  }
 
-    .top-nav-right.open .nav-list {
-        display: flex; /* 点击汉堡菜单后显示列表 */
-    }
+  .top-nav-right.open .nav-list {
+    display: flex;
+  }
 
-    .hamburger-menu {
-        display: flex; /* 在小屏幕显示汉堡菜单 */
-    }
+  .hamburger-menu {
+    display: flex;
+  }
 
-    .top-title {
-        flex: 1; /* 调整标题位置，确保汉堡菜单有空间 */
-    }
+  .top-title {
+    flex: 1;
+  }
 
-    .theme-switcher {
-        position: static; /* 使主题切换器位于正常流中 */
-        margin-left: auto;
-    }
+  .theme-switcher {
+    position: static;
+    margin-left: auto;
+  }
 }

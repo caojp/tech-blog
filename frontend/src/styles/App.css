@@ -1,32 +1,33 @@
-/* src/styles/HomePage.css */
+/* src/styles/App.css */
 @import 'themes.css';
 
+/* 基础 reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 响应式根字号：大屏稍大，小屏递减 */
 @media screen and (max-width: 1920px) {
-  html {
-    font-size: 20px;
-    max-width: 1920px;
-  }
+  html { font-size: 20px; }
 }
-
 @media screen and (max-width: 1366px) {
-  html {
-    font-size: 18px;
-    max-width: 1366px;
-  }
+  html { font-size: 18px; }
 }
-
 @media screen and (max-width: 1280px) {
-  html {
-    font-size: 16px;
-    max-width: 1280px;
-  }
+  html { font-size: 16px; }
 }
-
 @media (max-width: 1200px) {
-  html {
-    font-size: 14px; /* 屏幕宽度小于1200px时的字体大小 */
-    max-width: 1200px;
-  }
+  html { font-size: 14px; }
 }
 
 .home-page {
@@ -34,7 +35,6 @@
   flex-direction: row;
 }
 
-/* src/styles/HomePage.css */
 .main-content {
   display: flex;
   flex-direction: row;
@@ -43,19 +43,12 @@
 
 /* 加载与错误提示 */
 .status-message {
-  padding: 2rem;
-  font-size: 1rem;
-  color: #666;
+  padding: 3rem 2rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 .status-message.error {
-  color: #d33;
-}
-
-.dark-mode .status-message {
-  color: #999;
-}
-
-.dark-mode .status-message.error {
-  color: #ff6b6b;
+  color: var(--color-danger);
 }
