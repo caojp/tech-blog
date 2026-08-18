@@ -55,6 +55,12 @@ go build -o tech-blog .
 
 # 交叉编译 Linux
 GOOS=linux GOARCH=amd64 go build -o tech-blog .
+# windows cmd命令行下面编译Linux的可执行文件，需要安装mingw-w64环境
+set GO111MODULE=on
+set CGO_ENABLED=0
+set GOOS=linux
+set GOARCH=amd64
+go build -o tech-blog-linux-amd64 .
 ```
 
 ## API
