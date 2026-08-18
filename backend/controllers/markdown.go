@@ -1,18 +1,18 @@
 package controllers
 
 import (
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/caojp/tech-blog/backend/config"
 	logger "github.com/caojp/tech-blog/backend/middleware"
 	"github.com/caojp/tech-blog/backend/payloads"
 	"github.com/caojp/tech-blog/backend/services"
 	"github.com/caojp/tech-blog/backend/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 // resolveSafePath 解析目标路径并确保它位于配置的 ContentDir 范围内，
@@ -103,21 +103,26 @@ func GetMarkdownContent(c *gin.Context) {
 		return
 	}
 
+	// 从请求体中获取文件路径
 	filePath := requestData.FilePath
-	logger.Log.Debugf("FilePath: %s", filePath)
+	logger.Log.Debugf("Request FilePath: %s", filePath)
 
 	if filePath == "" {
+		logger.Log.Errorf("Invalid file path: %s", filePath)
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid path")
 		return
 	}
 
 	// 解码 URL 编码的路径（兼容前端可能编码的请求）
-	decodedFilePath, err := url.QueryUnescape(filePath)
+	// decodedFilePath, err := url.QueryUnescape(filePath)
+	decodedFilePath, err := utils.Base64Decode(filePath)
+
 	if err != nil {
 		logger.Log.Errorf("Failed to decode file path: %v", err)
 		utils.ErrorResponseFunc(c, http.StatusBadRequest, "Invalid file path")
 		return
 	}
+	logger.Log.Debugf("Decoded FilePath: %s", decodedFilePath)
 
 	// 校验路径在 ContentDir 范围内，防止路径穿越
 	absFilePath, err := resolveSafePath(decodedFilePath)
