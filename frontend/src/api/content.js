@@ -7,9 +7,15 @@ export const fetchCategories = async () => {
 
 export const fetchMarkdownContent = async (filePath) => {
     console.log('请求路径:', filePath);
-    // 对filePath进行Base64编码，兼容非Latin1字符（如中文）
-    const encodedFilePath = typeof btoa === 'function'
-        ? btoa(filePath)
-        : Buffer.from(filePath).toString('base64');
+    // Base64 encode filePath to support non-Latin1 characters (e.g. Chinese)
+    let encodedFilePath;
+    if (typeof btoa === 'function') {
+        const bytes = new TextEncoder().encode(filePath);
+        let binary = '';
+        bytes.forEach(b => binary += String.fromCharCode(b));
+        encodedFilePath = btoa(binary);
+    } else {
+        encodedFilePath = Buffer.from(filePath, 'utf-8').toString('base64');
+    }
     return await apiRequest('/api/markdown', 'POST', { filePath: encodedFilePath });
 };
