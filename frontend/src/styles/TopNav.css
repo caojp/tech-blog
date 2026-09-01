@@ -18,36 +18,55 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-basis: 20%;
+  flex-shrink: 0;
 }
 
+/* ========== 隐藏探针：.top-nav 直接子级，永远横向，永不塌缩 ========== */
+.nav-probe {
+  position: absolute;
+  left: 20px;             /* 与 .top-nav padding-left 对齐 */
+  top: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: -1;
+}
+
+.nav-probe .nav-link {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+/* ========== 非溢出态：紧贴左侧的内联菜单 ========== */
 .top-nav-right {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  flex-basis: 80%;
+  flex: 0 1 auto;       /* 不 grow，允许 shrink 到 0 */
+  min-width: 0;
 }
 
-.top-nav-right.open {
-  display: block;
+.nav-list-wrapper {
+  display: flex;
+  align-items: center;
 }
 
-/* 标题 */
-.top-title {
-  color: var(--text);
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0 12px 0 0;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-}
-
-/* 导航列表 */
-.nav-list {
+.nav-list-wrapper .nav-list {
   list-style: none;
   padding: 0;
   margin: 0 10px;
   display: flex;
+  flex-direction: row;
   gap: 4px;
 }
 
@@ -59,6 +78,7 @@
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -80,6 +100,7 @@
   color: var(--text-secondary);
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
 }
 
 .toggle-button:hover {
@@ -105,48 +126,105 @@
   color: var(--color-primary-hover);
 }
 
-/* 汉堡菜单（移动端） */
+/* 汉堡菜单按钮 —— 默认隐藏，溢出时显示 */
 .hamburger-menu {
   display: none;
   flex-direction: column;
-  justify-content: space-between;
-  width: 24px;
-  height: 18px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.hamburger-menu:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--color-primary);
 }
 
 .hamburger-menu .bar {
   height: 2px;
-  width: 100%;
+  width: 18px;
   background-color: var(--text);
   border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-/* 移动端 */
-@media (max-width: 768px) {
-  .nav-list {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 56px;
-    left: 0;
-    width: 100%;
-    background-color: var(--bg-surface);
-    border-bottom: 1px solid var(--border);
-    padding: 8px;
-    gap: 2px;
-    box-shadow: var(--shadow);
-  }
+/* 汉堡按钮打开态：变成 X */
+.hamburger-menu.active .bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
 
-  .top-nav-right.open .nav-list {
-    display: flex;
-  }
+.hamburger-menu.active .bar:nth-child(2) {
+  opacity: 0;
+}
 
-  .hamburger-menu {
-    display: flex;
-  }
+.hamburger-menu.active .bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
 
-  .top-title {
-    flex: 1;
-  }
+/* ========== 溢出模式 ========== */
+
+/* 溢出时：显示汉堡按钮 */
+.top-nav.is-overflowing .hamburger-menu {
+  display: flex;
+}
+
+/* ========== 多列下拉面板 ========== */
+.nav-dropdown-panel {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  z-index: 99;
+  /* 收起态：隐藏 */
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+/* 展开态 */
+.nav-dropdown-panel.open {
+  visibility: visible;
+  opacity: 1;
+  height: auto;
+  transition: opacity 0.2s ease, visibility 0s linear 0s;
+}
+
+/* 下拉内的菜单列表：CSS Grid 多列自适应 */
+.nav-dropdown-panel .nav-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 4px;
+  padding: 8px;
+  margin: 0;
+  align-content: start;
+  /* 不超出视口高度，超出时竖向滚动；列数不够时横向滚动 */
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* 下拉菜单项撑满单元格宽度 */
+.nav-dropdown-panel .nav-item {
+  display: block;
+}
+
+.nav-dropdown-panel .nav-link {
+  display: block;
+  padding: 10px 14px;
+  font-size: 0.9rem;
 }
