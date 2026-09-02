@@ -217,11 +217,19 @@
   font-size: 0.82em;
 }
 
-/* 表格 */
-.markdown-content table {
-  width: 100%;
-  border-collapse: collapse;
+/* ===== 表格：超出内容区时容器内横向滚动 ===== */
+.markdown-content .table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
   margin: 1.2em 0;
+  border-radius: var(--radius-sm);
+}
+
+.markdown-content table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
   font-size: 0.88em;
 }
 
@@ -246,6 +254,242 @@
   border: none;
   border-top: 1px solid var(--border);
   margin: 2.2em 0;
+}
+
+/* ===== Mermaid 图表 ===== */
+.markdown-content .mermaid-wrapper {
+  position: relative;
+  margin: 1.2em 0;
+  padding: 16px 48px 16px 16px;  /* 右侧留空间给全屏按钮 */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  text-align: center;
+}
+
+.markdown-content .mermaid-block {
+  display: inline-block;
+  min-width: 100%;
+}
+
+/* 关键：SVG 保持自然尺寸，不强制缩放，由容器滚动 */
+.markdown-content .mermaid-wrapper svg {
+  max-width: none;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ===== Mermaid 全屏按钮 ===== */
+.mermaid-fullscreen-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.5;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  z-index: 2;
+}
+
+.mermaid-fullscreen-btn:hover {
+  opacity: 1;
+  background-color: var(--bg-hover);
+  color: var(--color-primary);
+}
+
+/* ===== Mermaid 全屏浮层 ===== */
+.mermaid-fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mermaid-fullscreen-toolbar {
+  flex-shrink: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: rgba(30, 30, 30, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.mermaid-fullscreen-toolbar .zoom-info {
+  color: #999;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.mermaid-fullscreen-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mermaid-fullscreen-actions button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.mermaid-fullscreen-actions button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-actions .close-btn {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: rgba(255, 80, 80, 0.5);
+}
+
+.mermaid-fullscreen-actions .close-btn:hover {
+  background: rgba(255, 80, 80, 0.5);
+}
+
+.mermaid-fullscreen-canvas {
+  flex: 1;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+}
+
+.mermaid-fullscreen-canvas.panning {
+  cursor: grabbing;
+}
+
+.mermaid-fullscreen-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+  user-select: none;
+}
+
+.mermaid-fullscreen-svg svg {
+  display: block;
+  max-width: none;
+  width: auto;
+  height: auto;
+}
+
+.mermaid-error-wrap {
+  text-align: left;
+  background-color: #fff5f5;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-size: 0.82em;
+}
+
+.mermaid-error-title {
+  font-weight: 600;
+  color: #c33;
+  margin-bottom: 6px;
+}
+
+.mermaid-error-line {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.mermaid-error-msg {
+  color: #991b1b;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  word-break: break-all;
+}
+
+.mermaid-hint {
+  background-color: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.mermaid-hint code {
+  background-color: rgba(0, 0, 0, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.mermaid-error-src {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.markdown-content.dark-mode .mermaid-wrapper {
+  background-color: var(--bg-hover);
+}
+
+.markdown-content.dark-mode .mermaid-error-wrap {
+  background-color: #3a1a1a;
+  border-color: #6b2121;
+}
+
+.markdown-content.dark-mode .mermaid-error-title {
+  color: #fca5a5;
+}
+
+.markdown-content.dark-mode .mermaid-error-msg {
+  color: #f87171;
+}
+
+.markdown-content.dark-mode .mermaid-hint {
+  background-color: #78350f;
+  border-color: #b45309;
+  color: #fcd34d;
+}
+
+.markdown-content.dark-mode .mermaid-hint code {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content.dark-mode .mermaid-error-src {
+  background-color: #0f172a;
+  color: #cbd5e1;
 }
 
 /* 移动端 */
