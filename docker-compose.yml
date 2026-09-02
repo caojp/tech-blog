@@ -4,8 +4,8 @@ services:
     container_name: tech-blog
     ports:
       - "80:80"
-    # 如需在构建时使用自定义 posts 目录，在 docker build 前设置环境变量：
-    #   POSTS_DIR=/your/posts/path docker compose build
-    # 注意：由于 posts 内容在 build 时就打包进 bundle，运行时挂载不会生效。
-    # 要替换内容需重新 build。
+    # 挂载你的 Markdown 内容目录到 nginx 配置中的 alias 路径
+    # 修改左边路径为你服务器上的 md 目录
+    volumes:
+      - /opt/tech-blog/awesome-me:/opt/tech-blog/awesome-me:ro
     restart: unless-stopped

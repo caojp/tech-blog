@@ -125,7 +125,10 @@ export default defineConfig(({ mode }) => {
     ? path.resolve(postsDir)
     : path.resolve(__dirname, postsDir);
 
-  console.log(`[vite] mode=${mode}, POSTS_DIR=${postsDir} → ${postsAbsPath}`);
+  // 生产模式不需要 POSTS_DIR（运行时 HTTP 拉取），只在开发模式打印日志
+  if (mode === 'development') {
+    console.log(`[vite] mode=${mode}, POSTS_DIR=${postsDir} → ${postsAbsPath}`);
+  }
 
   return {
     plugins: [react(), postsPlugin(postsAbsPath)],
