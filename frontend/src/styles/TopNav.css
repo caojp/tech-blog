@@ -8,7 +8,7 @@
   top: 0;
   left: 0;
   height: 56px;
-  z-index: 100;
+  z-index: 1100;
   display: flex;
   align-items: center;
   box-shadow: var(--shadow-sm);
@@ -186,7 +186,8 @@
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
-  z-index: 99;
+  /* 必须高于 .side-nav(z-index:150) 和 TableOfContents(z-index:1000) */
+  z-index: 1100;
   /* 收起态：隐藏 */
   visibility: hidden;
   opacity: 0;

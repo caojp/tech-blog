@@ -63,80 +63,101 @@ const mermaidSourceMap = new WeakMap();
 
 /**
  * Mermaid 源码预处理器：自动给 flowchart 的节点标签和边标签加引号。
+ *
+ * 架构：占位符隔离法
+ * 1. 先抽取所有 edge label → 存数组 + 替换为 __MERMAID_EDGE_N__
+ *    （防止节点正则误匹配 edge label 内的内容，也防止 edge label 自己被节点正则二次破坏）
+ * 2. 在占位符保护下处理节点标签（rect/round/diamond）
+ * 3. 单独处理每个抽取出来的 edge label（无论是否已加引号，内部 " 全部 → &quot;）
+ * 4. 用处理后的 edge label 还原占位符
+ *
+ * Mermaid flowchart 中 #()[]{}+/ 等字符是语法标记。
+ * + 在节点标签里会被当成 subgraph 合并语法。
  */
 function preprocessMermaid(source) {
-    let result = source;
-
-    // === 1. 边标签：-->|label| ===
-    const arrowRe = /((?:-->|-->|==>|-.->|<-->|<==>|o--o|o==o)(?:>>)?)\|(?!")([^|]+)\|/g;
-    result = result.replace(arrowRe, (match, arrow, label) => {
-        const trimmed = label.trim();
-        if (/^".*"$/.test(trimmed)) return match;
-        if (trimmed.startsWith('"')) return match;
-        if (!/[(){}\[\]\/\\#]/.test(label)) return match;
-        if (label.includes('"')) {
-            return `${arrow}|"${label.replace(/"/g, '&quot;')}"|`;
+    // === Step 1: 抽取所有 edge label，替换为占位符 ===
+    const edgeLabels = [];
+    let protectedSource = source.replace(
+        /((?:-->|-->|==>|-.->|<-->|<==>|o--o|o==o)(?:>>)?)\|([^|]+)\|/g,
+        (match, arrow, label) => {
+            const idx = edgeLabels.length;
+            edgeLabels.push({ arrow, label });
+            return `${arrow}|__MERMAID_EDGE_${idx}__|`;
         }
-        return `${arrow}|"${label}"|`;
+    );
+
+    // === Step 2: 在占位符保护下处理节点标签 ===
+    // 矩形 id[text]
+    protectedSource = protectedSource.replace(/(\b[A-Za-z0-9_]+)\[([^\]]*)\]/g, (m, id, text) => {
+        const trimmed = text.trim();
+        if (/^".*"$/.test(trimmed)) return m;
+        if (trimmed.startsWith('"')) return m;
+        if (['subgraph','direction','classDef','style','class','linkStyle'].includes(id.toLowerCase())) return m;
+        if (text.startsWith('(')) return m;   // 圆柱 [(text)]
+        if (text.startsWith('/')) return m;   // 平行四边形 /text/
+        if (text.startsWith('{')) return m;   // 六边形 {{text}}
+        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        const safe = text.replace(/"/g, '&quot;');
+        return `${id}["${safe}"]`;
     });
 
-    // === 2. 节点标签：矩形 id[text] ===
-    result = result.replace(
-        /(\b[A-Za-z0-9_]+)\[([^\]]*)\]/g,
-        (match, id, text) => {
-            const trimmed = text.trim();
-            if (/^".*"$/.test(trimmed)) return match;
-            if (trimmed.startsWith('"')) return match;
-            if (['subgraph', 'direction', 'classDef', 'style', 'class', 'linkStyle'].includes(id.toLowerCase())) return match;
-            if (/^\[\(.*\)\]$/.test(text) || /^\{\{(.*)\}\}$/.test(text)) return match;
-            if (/^\/.*\/$/.test(text) || /^\\.*\\$/.test(text)) return match;
-            if (!/[#<>'"\{\}\[\]\(\)\/\\]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return match;
-            const safe = text.includes('"') ? text.replace(/"/g, '&quot;') : text;
-            return `${id}["${safe}"]`;
-        }
-    );
+    // 圆角 id(text)
+    protectedSource = protectedSource.replace(/(\b[A-Za-z0-9_]+)\(([^)]*)\)/g, (m, id, text) => {
+        const trimmed = text.trim();
+        if (/^".*"$/.test(trimmed)) return m;
+        if (trimmed.startsWith('"')) return m;
+        if (['subgraph','direction','classDef','style','class','linkStyle'].includes(id.toLowerCase())) return m;
+        if (text.startsWith('(')) return m;   // 圆形 ((text))
+        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        const safe = text.replace(/"/g, '&quot;');
+        return `${id}("${safe}")`;
+    });
 
-    // === 3. 节点标签：圆角 id(text) ===
-    result = result.replace(
-        /(\b[A-Za-z0-9_]+)\(([^)]*)\)/g,
-        (match, id, text) => {
-            const trimmed = text.trim();
-            if (/^".*"$/.test(trimmed)) return match;
-            if (trimmed.startsWith('"')) return match;
-            if (['subgraph', 'direction', 'classDef', 'style', 'class', 'linkStyle'].includes(id.toLowerCase())) return match;
-            if (text.startsWith('(') && text.endsWith(')')) return match;
-            if (!/[#<>'"\{\}\[\]\(\)\/\\]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return match;
-            const safe = text.includes('"') ? text.replace(/"/g, '&quot;') : text;
-            return `${id}("${safe}")`;
-        }
-    );
+    // 菱形 id{text}
+    protectedSource = protectedSource.replace(/(\b[A-Za-z0-9_]+)\{([^}]*)\}/g, (m, id, text) => {
+        const trimmed = text.trim();
+        if (/^".*"$/.test(trimmed)) return m;
+        if (trimmed.startsWith('"')) return m;
+        if (['subgraph','direction','classDef','style','class','linkStyle'].includes(id.toLowerCase())) return m;
+        if (text.startsWith('{')) return m;   // 六边形 {{text}}
+        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        const safe = text.replace(/"/g, '&quot;');
+        return `${id}{"${safe}"}`;
+    });
 
-    // === 4. 节点标签：菱形 id{text} ===
-    result = result.replace(
-        /(\b[A-Za-z0-9_]+)\{([^}]*)\}/g,
-        (match, id, text) => {
-            const trimmed = text.trim();
-            if (/^".*"$/.test(trimmed)) return match;
-            if (trimmed.startsWith('"')) return match;
-            if (['subgraph', 'direction', 'classDef', 'style', 'class', 'linkStyle'].includes(id.toLowerCase())) return match;
-            if (text.startsWith('{') && text.endsWith('}')) return match;
-            if (!/[#<>'"\{\}\[\]\(\)\/\\]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return match;
-            const safe = text.includes('"') ? text.replace(/"/g, '&quot;') : text;
-            return `${id}{"${safe}"}`;
+    // === Step 3: 处理每个 edge label 并还原占位符 ===
+    let result = protectedSource;
+    for (let i = edgeLabels.length - 1; i >= 0; i--) {
+        const { arrow, label } = edgeLabels[i];
+        const trimmed = label.trim();
+        let newLabel;
+        if (/^".*"$/.test(trimmed)) {
+            // 已经是完整引号包裹 "..." — 内部 " 转 &quot;
+            const inner = trimmed.slice(1, -1).replace(/"/g, '&quot;');
+            newLabel = `"${inner}"`;
+        } else if (trimmed.startsWith('"')) {
+            // 只有开头引号（用户尝试加引号）
+            const inner = trimmed.slice(1).replace(/"/g, '&quot;');
+            newLabel = `"${inner}"`;
+        } else if (/[()+{}\[\]\/\\#<>'+]/.test(trimmed) || /<br\s*\/?>/.test(trimmed)) {
+            // 含特殊字符，需要加引号
+            const safe = trimmed.replace(/"/g, '&quot;');
+            newLabel = `"${safe}"`;
+        } else {
+            newLabel = label;
         }
-    );
+        const placeholder = `__MERMAID_EDGE_${i}__`;
+        result = result.split(`|${placeholder}|`).join(`|${newLabel}|`);
+    }
 
     return result;
 }
 
-const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) => {
+const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOpenFullscreen }) => {
     const containerRef = useRef(null);
     const [highlightStyle, setHighlightStyle] = useState('okaidia');
     const [copyButtonText, setCopyButtonText] = useState('⎘');
     const mermaidCounter = useRef(0);
-
-    // 全屏浮层状态：{ svg: string, width: number, height: number } | null
-    const [fullscreenSvg, setFullscreenSvg] = useState(null);
 
     // 初始化 mermaid
     useEffect(() => {
@@ -201,23 +222,65 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
 
         const rafId = requestAnimationFrame(renderMermaid);
         return () => cancelAnimationFrame(rafId);
-    }, [content, setAnchors]);
+    }, [content, setAnchors, isDarkMode, isSideNavOpen]);
 
-    // 打开全屏：从已渲染的 .mermaid-block 取 SVG
+    // 打开全屏：克隆 SVG 并重命名 id，然后通过回调交给父组件
     const openFullscreen = useCallback((e) => {
         const wrapper = e.currentTarget.closest('.mermaid-wrapper');
         if (!wrapper) return;
         const svgEl = wrapper.querySelector('.mermaid-block svg');
         if (!svgEl) return;
-        const rect = svgEl.getBoundingClientRect();
-        setFullscreenSvg({
-            outerHTML: svgEl.outerHTML,
-            width: rect.width,
-            height: rect.height,
-        });
-    }, []);
 
-    const closeFullscreen = useCallback(() => setFullscreenSvg(null), []);
+        // 1. 算自然尺寸（用 viewBox）
+        let naturalW = 0, naturalH = 0;
+        if (svgEl.viewBox && svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.width > 0) {
+            naturalW = svgEl.viewBox.baseVal.width;
+            naturalH = svgEl.viewBox.baseVal.height;
+        } else {
+            const rect = svgEl.getBoundingClientRect();
+            naturalW = Math.round(rect.width) || 800;
+            naturalH = Math.round(rect.height) || 600;
+        }
+
+        // 2. 深拷贝 SVG 节点
+        const clone = svgEl.cloneNode(true);
+
+        // 3. 重命名所有 id：加 "-fs" 后缀，避免与原 DOM 冲突
+        const suffix = '-fs';
+        const idMap = new Map();
+
+        clone.querySelectorAll('[id]').forEach((el) => {
+            const oldId = el.getAttribute('id');
+            idMap.set(oldId, oldId + suffix);
+            el.setAttribute('id', oldId + suffix);
+        });
+
+        // 4. 修复所有 url(#xxx) 引用
+        clone.querySelectorAll('[clip-path], [fill], [stroke], [marker-start], [marker-end], [marker-mid]').forEach((el) => {
+            ['clip-path', 'fill', 'stroke', 'marker-start', 'marker-end', 'marker-mid'].forEach((attr) => {
+                const val = el.getAttribute(attr);
+                if (val && val.startsWith('url(#')) {
+                    const oldId = val.slice(5, -1);
+                    const newId = idMap.get(oldId);
+                    if (newId) el.setAttribute(attr, `url(#${newId})`);
+                }
+            });
+        });
+
+        // 5. 设置具体的 width/height（覆盖 SVG 自带的 width="100%"）
+        clone.setAttribute('width', Math.round(naturalW));
+        clone.setAttribute('height', Math.round(naturalH));
+
+        // 6. 序列化并回调给父组件（不在本组件持有 state，避免重渲染清除所有 Mermaid）
+        const serializer = new XMLSerializer();
+        const sanitizedHtml = serializer.serializeToString(clone);
+
+        onOpenFullscreen?.({
+            html: sanitizedHtml,
+            naturalWidth: naturalW,
+            naturalHeight: naturalH,
+        });
+    }, [onOpenFullscreen]);
 
     const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
 
@@ -255,7 +318,6 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
                             {props.children}
                         </a>
                     ),
-                    // 表格：用 .table-wrapper 包裹，超出时容器内横向滚动
                     table: ({ ...props }) => (
                         <div className="table-wrapper">
                             <table {...props} />
@@ -266,7 +328,6 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
                         const lang = match ? match[1].toLowerCase() : '';
                         const codeStr = String(children).replace(/\n$/, '');
 
-                        // mermaid 图表
                         if (!inline && lang === 'mermaid') {
                             const setRef = (el) => {
                                 if (el) mermaidSourceMap.set(el, codeStr);
@@ -324,153 +385,12 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen }) =>
             >
                 {content}
             </ReactMarkdown>
-
-            {/* 全屏浮层 */}
-            {fullscreenSvg && (
-                <MermaidFullscreen
-                    svgData={fullscreenSvg}
-                    onClose={closeFullscreen}
-                />
-            )}
         </div>
     );
 };
 
-/**
- * Mermaid 全屏查看组件：拖拽平移 + 滚轮缩放 + 工具栏按钮
- */
-const MermaidFullscreen = ({ svgData, onClose }) => {
-    const canvasRef = useRef(null);
-    const [zoom, setZoom] = useState(1);
-    const [pan, setPan] = useState({ x: 0, y: 0 });
-    const [isPanning, setIsPanning] = useState(false);
-    const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
-
-    // ESC 关闭
-    useEffect(() => {
-        const handleKey = (e) => {
-            if (e.key === 'Escape') onClose();
-            else if (e.key === '+' || e.key === '=') setZoom(z => Math.min(z * 1.2, 10));
-            else if (e.key === '-') setZoom(z => Math.max(z / 1.2, 0.1));
-            else if (e.key === '0') { setZoom(1); setPan({ x: 0, y: 0 }); }
-        };
-        document.addEventListener('keydown', handleKey);
-        // 禁止背景滚动
-        const prevOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.removeEventListener('keydown', handleKey);
-            document.body.style.overflow = prevOverflow;
-        };
-    }, [onClose]);
-
-    // 滚轮缩放（以鼠标位置为中心）
-    const handleWheel = useCallback((e) => {
-        e.preventDefault();
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-
-        const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        setZoom((prevZoom) => {
-            const newZoom = Math.min(Math.max(prevZoom * delta, 0.1), 10);
-            // 以鼠标位置为缩放中心调整 pan
-            setPan((prevPan) => ({
-                x: mx - (mx - prevPan.x) * (newZoom / prevZoom),
-                y: my - (my - prevPan.y) * (newZoom / prevZoom),
-            }));
-            return newZoom;
-        });
-    }, []);
-
-    // 拖拽平移
-    const handleMouseDown = useCallback((e) => {
-        if (e.button !== 0) return;
-        setIsPanning(true);
-        panStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
-    }, [pan]);
-
-    useEffect(() => {
-        if (!isPanning) return;
-        const handleMove = (e) => {
-            setPan({
-                x: panStart.current.panX + (e.clientX - panStart.current.x),
-                y: panStart.current.panY + (e.clientY - panStart.current.y),
-            });
-        };
-        const handleUp = () => setIsPanning(false);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('mouseup', handleUp);
-        return () => {
-            window.removeEventListener('mousemove', handleMove);
-            window.removeEventListener('mouseup', handleUp);
-        };
-    }, [isPanning]);
-
-    // 触摸支持
-    const handleTouchStart = useCallback((e) => {
-        if (e.touches.length === 1) {
-            setIsPanning(true);
-            const t = e.touches[0];
-            panStart.current = { x: t.clientX, y: t.clientY, panX: pan.x, panY: pan.y };
-        }
-    }, [pan]);
-
-    useEffect(() => {
-        if (!isPanning) return;
-        const handleTouchMove = (e) => {
-            if (e.touches.length === 1) {
-                const t = e.touches[0];
-                setPan({
-                    x: panStart.current.panX + (t.clientX - panStart.current.x),
-                    y: panStart.current.panY + (t.clientY - panStart.current.y),
-                });
-            }
-        };
-        const handleTouchEnd = () => setIsPanning(false);
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd);
-        return () => {
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
-        };
-    }, [isPanning]);
-
-    const zoomIn = () => setZoom(z => Math.min(z * 1.25, 10));
-    const zoomOut = () => setZoom(z => Math.max(z / 1.25, 0.1));
-    const reset = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
-
-    return (
-        <div className="mermaid-fullscreen-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-            <div className="mermaid-fullscreen-toolbar">
-                <span className="zoom-info">缩放: {Math.round(zoom * 100)}%  ·  ESC 关闭  ·  + / - 缩放  ·  0 重置  ·  鼠标拖动平移</span>
-                <div className="mermaid-fullscreen-actions">
-                    <button onClick={zoomOut} title="缩小 (-)">−</button>
-                    <button onClick={reset} title="重置 (0)">重置</button>
-                    <button onClick={zoomIn} title="放大 (+)">+</button>
-                    <button className="close-btn" onClick={onClose} title="关闭 (ESC)">关闭</button>
-                </div>
-            </div>
-            <div
-                ref={canvasRef}
-                className={`mermaid-fullscreen-canvas ${isPanning ? 'panning' : ''}`}
-                onWheel={handleWheel}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-            >
-                <div
-                    className="mermaid-fullscreen-svg"
-                    style={{
-                        transform: `translate(calc(-50% + ${pan.x}px), calc(-50% + ${pan.y}px)) scale(${zoom})`,
-                    }}
-                    dangerouslySetInnerHTML={{ __html: svgData.outerHTML }}
-                />
-            </div>
-        </div>
-    );
-};
+const MemoMarkdownRenderer = memo(MarkdownRenderer);
+export default MemoMarkdownRenderer;
 
 function escapeHtml(str) {
     return str.replace(/[&<>"']/g, (c) => ({
@@ -480,7 +400,7 @@ function escapeHtml(str) {
 
 function renderMermaidError(source, errorMsg, lineNum) {
     const hint = errorMsg.includes('Parse error')
-        ? `<div class="mermaid-hint">💡 提示: 节点/边标签中包含 ( ) [ ] { } / 等特殊字符时，请用双引号包裹标签文本，例如：<code>A -->|"标签文本"| B</code></div>`
+        ? `<div class="mermaid-hint">💡 提示: 节点/边标签中包含 ( ) [ ] { } / + # 等特殊字符时，请用双引号包裹标签文本，例如：<code>A -->|"标签文本"| B</code></div>`
         : '';
     return `
         <div class="mermaid-error-wrap">
@@ -493,5 +413,3 @@ function renderMermaidError(source, errorMsg, lineNum) {
         </div>
     `;
 }
-
-export default memo(MarkdownRenderer);

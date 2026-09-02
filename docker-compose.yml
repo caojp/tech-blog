@@ -3,10 +3,9 @@ services:
     build: .
     container_name: tech-blog
     ports:
-      - "8080:8080"
-    volumes:
-      # 挂载你的 Markdown 内容目录
-      - ./posts:/app/posts
-      # 挂载配置文件（可选，覆盖镜像内默认配置）
-      - ./backend/config.yaml:/app/backend/config.yaml
+      - "80:80"
+    # 如需在构建时使用自定义 posts 目录，在 docker build 前设置环境变量：
+    #   POSTS_DIR=/your/posts/path docker compose build
+    # 注意：由于 posts 内容在 build 时就打包进 bundle，运行时挂载不会生效。
+    # 要替换内容需重新 build。
     restart: unless-stopped

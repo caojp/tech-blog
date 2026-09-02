@@ -1,16 +1,3 @@
-# === Go ===
-backend/tech-blog
-backend/tech-blog.exe
-backend/*.log
-backend/log/
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-
 # === Node.js ===
 node_modules/
 frontend/node_modules/
@@ -44,9 +31,4 @@ Thumbs.db
 desktop.ini
 
 # === 构建产物 ===
-/backend/bin/
 /frontend/dist/
-
-# === 运行时内容目录（用户自行创建，不入版本库） ===
-posts/*
-!posts/.gitkeep

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import TopNav from '../components/TopNav';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import MermaidFullscreen from '../components/MermaidFullscreen';
 import {fetchCategories, fetchMarkdownContent} from '../api/content';
 import SideNav from '../components/SideNav';
 import TableOfContents from '../components/TableOfContents.jsx';
@@ -35,6 +37,7 @@ const HomePage = () => {
     const [isSideNavOpen, setIsSideNavOpen] = useState(() => window.innerWidth > 768);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fullscreenSvg, setFullscreenSvg] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
     // loadMarkdown 加载指定文章内容，统一管理 loading / error 状态。
@@ -128,6 +131,15 @@ const HomePage = () => {
         setIsSideNavOpen(prev => !prev);
     }, []);
 
+    // 全屏 Mermaid 回调
+    const handleOpenFullscreen = useCallback((svgData) => {
+        setFullscreenSvg(svgData);
+    }, []);
+
+    const handleCloseFullscreen = useCallback(() => {
+        setFullscreenSvg(null);
+    }, []);
+
     return (
         <div className={`home-page ${isDarkMode ? 'dark-mode' : ''}`}>
             <TopNav
@@ -159,11 +171,21 @@ const HomePage = () => {
                             setAnchors={setAnchors}
                             isDarkMode={isDarkMode}
                             isSideNavOpen={isSideNavOpen}
+                            onOpenFullscreen={handleOpenFullscreen}
                         />
                         <TableOfContents anchors={anchors} isDarkMode={isDarkMode}/>
                     </>
                 )}
             </div>
+
+            {fullscreenSvg && createPortal(
+                <MermaidFullscreen
+                    svgData={fullscreenSvg}
+                    onClose={handleCloseFullscreen}
+                    isDarkMode={isDarkMode}
+                />,
+                document.body
+            )}
         </div>
     );
 };

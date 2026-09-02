@@ -4,19 +4,21 @@
 
 ## 开发环境准备
 
-1. **Go** ≥ 1.22 — [下载](https://go.dev/dl/)
-2. **Node.js** ≥ 18 — [下载](https://nodejs.org/)
-3. 克隆仓库并安装依赖：
+1. **Node.js** ≥ 18 — [下载](https://nodejs.org/)
+2. 克隆仓库并安装依赖：
 
 ```bash
 git clone https://github.com/caojp/tech-blog.git
-cd tech-blog
+cd tech-blog/frontend && npm install
+```
 
-# 后端
-cd backend && go mod tidy
+3. 配置 Markdown 目录：编辑 `.env.development`，设置 `POSTS_DIR` 指向你的知识库。
 
-# 前端
-cd ../frontend && npm install
+4. 启动开发服务器：
+
+```bash
+npm run dev
+# 访问 http://localhost:5173
 ```
 
 ## 开发流程
@@ -31,9 +33,8 @@ cd ../frontend && npm install
 3. 编写代码，确保通过检查：
 
    ```bash
-   make lint    # 代码检查
-   make test    # 运行测试
-   make build   # 构建验证
+   npm run lint    # ESLint 检查
+   npm run build   # 构建验证
    ```
 
 4. 提交代码（遵循下方提交规范）
@@ -67,18 +68,12 @@ cd ../frontend && npm install
 **示例**：
 
 ```
-feat(frontend): 侧边栏支持拖拽调整宽度
+feat(mermaid): 支持 Mermaid 流程图全屏查看
 
-fix(backend): 修复路径穿越漏洞，校验路径在 ContentDir 范围内
+fix(topnav): 修复侧边栏遮挡顶部导航下拉菜单
 ```
 
 ## 代码规范
-
-### Go
-
-- 运行 `gofmt -w .` 格式化
-- 遵循 [Effective Go](https://go.dev/doc/effective_go)
-- 导出函数需有注释，以函数名开头
 
 ### React / JavaScript
 
@@ -86,6 +81,16 @@ fix(backend): 修复路径穿越漏洞，校验路径在 ContentDir 范围内
 - 使用函数组件 + Hooks
 - 组件使用 `memo` 避免不必要的重渲染
 - 样式使用 CSS 变量（Design Token），不硬编码颜色
+- Mermaid 预处理新增特殊字符时，同步更新测试用例
+
+### Mermaid 预处理（重要）
+
+修改 `preprocessMermaid()` 时注意：
+
+- 节点正则（rect/round/diamond）和边标签正则的特殊字符列表必须**保持同步**
+- 嵌套形状（圆形 `(())`、六边形 `{{}}`、圆柱 `[()]`）需要跳过处理
+- 内部引号用 `&quot;` 转义（不是 `\"`）
+- 边标签先抽成占位符，处理完节点后再还原，避免节点正则误匹配
 
 ## 分支命名
 

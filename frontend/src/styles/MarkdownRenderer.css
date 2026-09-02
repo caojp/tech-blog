@@ -314,33 +314,49 @@
 }
 
 /* ===== Mermaid 全屏浮层 ===== */
+/* 默认：Light 主题 → 用深色背景凸显 Mermaid */
 .mermaid-fullscreen-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: #12161e;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.mermaid-fullscreen-toolbar {
+/* Dark 主题 → 用浅色背景凸显 Mermaid */
+.mermaid-fullscreen-overlay.dark {
+  background-color: #fafafa;
+}
+
+.mermaid-fullscreen-overlay .mermaid-fullscreen-toolbar {
   flex-shrink: 0;
   height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background-color: rgba(30, 30, 30, 0.95);
+  background-color: #1c2230;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: #e0e0e0;
   font-size: 14px;
 }
 
-.mermaid-fullscreen-toolbar .zoom-info {
-  color: #999;
+.mermaid-fullscreen-overlay.dark .mermaid-fullscreen-toolbar {
+  background-color: #f0f0f0;
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+  color: #333;
+}
+
+.mermaid-fullscreen-overlay .mermaid-fullscreen-toolbar .zoom-info {
+  color: #888;
   font-family: var(--font-mono);
   font-size: 12px;
+}
+
+.mermaid-fullscreen-overlay.dark .mermaid-fullscreen-toolbar .zoom-info {
+  color: #777;
 }
 
 .mermaid-fullscreen-actions {
@@ -360,17 +376,28 @@
   transition: background 0.2s;
 }
 
+.mermaid-fullscreen-overlay.dark .mermaid-fullscreen-actions button {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #333;
+}
+
 .mermaid-fullscreen-actions button:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.mermaid-fullscreen-overlay.dark .mermaid-fullscreen-actions button:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
 .mermaid-fullscreen-actions .close-btn {
-  background: rgba(255, 80, 80, 0.3);
-  border-color: rgba(255, 80, 80, 0.5);
+  background: rgba(220, 50, 50, 0.85);
+  border-color: rgba(220, 50, 50, 0.9);
+  color: #fff;
 }
 
 .mermaid-fullscreen-actions .close-btn:hover {
-  background: rgba(255, 80, 80, 0.5);
+  background: rgba(200, 40, 40, 1);
 }
 
 .mermaid-fullscreen-canvas {
@@ -391,13 +418,33 @@
   transform-origin: center center;
   transition: transform 0.1s ease-out;
   user-select: none;
+  /* Light 模式：overlay 是深色 → SVG 容器给白色底，让深色文字可见 */
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark 模式：overlay 是浅色 → SVG 容器给深色底，让浅色文字可见 */
+.mermaid-fullscreen-overlay.dark .mermaid-fullscreen-svg {
+  background-color: #1a1a2e;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 .mermaid-fullscreen-svg svg {
   display: block;
   max-width: none;
-  width: auto;
-  height: auto;
+  /* 用具体像素尺寸，不用 SVG 自带的 width="100%" */
+  width: var(--svg-w, auto);
+  height: var(--svg-h, auto);
+}
+
+.mermaid-fullscreen-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #999;
+  font-size: 14px;
 }
 
 .mermaid-error-wrap {

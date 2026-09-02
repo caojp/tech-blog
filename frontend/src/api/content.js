@@ -1,21 +1,30 @@
-// src/api/content.js
-import { apiRequest } from './request';
+/**
+ * 纯前端内容加载：import Vite 虚拟模块 virtual:posts
+ *
+ * virtual:posts 由 vite.config.js 中的 postsPlugin 在 build/dev 时生成，
+ * 包含 POSTS_DIR 下所有 md 文件的内容 + 目录树。
+ * POSTS_DIR 在 .env.development / .env.production 中配置。
+ */
+import postsData from 'virtual:posts';
 
+const { files, tree } = postsData;
+
+/**
+ * 获取目录树。模拟 GET /api/content 返回格式：
+ *   { status: 'success', data: FileNode[] }
+ */
 export const fetchCategories = async () => {
-    return await apiRequest('/api/content', 'GET');
+    return { status: 'success', data: tree };
 };
 
+/**
+ * 获取单个 md 文件内容。模拟 POST /api/markdown 返回格式：
+ *   { status: 'success', data: 'markdown 原文' }
+ */
 export const fetchMarkdownContent = async (filePath) => {
-    console.log('请求路径:', filePath);
-    // Base64 encode filePath to support non-Latin1 characters (e.g. Chinese)
-    let encodedFilePath;
-    if (typeof btoa === 'function') {
-        const bytes = new TextEncoder().encode(filePath);
-        let binary = '';
-        bytes.forEach(b => binary += String.fromCharCode(b));
-        encodedFilePath = btoa(binary);
-    } else {
-        encodedFilePath = Buffer.from(filePath, 'utf-8').toString('base64');
+    const content = files[filePath];
+    if (content === undefined) {
+        throw new Error(`File not found: ${filePath}`);
     }
-    return await apiRequest('/api/markdown', 'POST', { filePath: encodedFilePath });
+    return { status: 'success', data: content };
 };
