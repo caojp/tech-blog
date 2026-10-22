@@ -1,0 +1,106 @@
+/* TagPage.css — 标签云 + 按标签筛选文章列表 */
+.tag-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.tag-page-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tag-page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.tag-page-home {
+  color: var(--color-primary, #2563eb);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.tag-page-home:hover {
+  text-decoration: underline;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.tag-chip {
+  border: 1px solid var(--border, #e5e7eb);
+  background: var(--bg-card, #fff);
+  color: var(--text, #1f2937);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tag-chip:hover {
+  border-color: var(--color-primary, #2563eb);
+  color: var(--color-primary, #2563eb);
+}
+
+.tag-chip.active {
+  background: var(--color-primary, #2563eb);
+  border-color: var(--color-primary, #2563eb);
+  color: #fff;
+}
+
+.tag-count {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
+.tag-article-list h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.tag-article-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag-article-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border, #eee);
+}
+
+.tag-article-list li button {
+  background: none;
+  border: none;
+  color: var(--color-primary, #2563eb);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.tag-article-list li button:hover {
+  text-decoration: underline;
+}
+
+.tag-article-path {
+  color: var(--text-secondary, #999);
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 55%;
+}

@@ -16,6 +16,73 @@
   line-height: 1.75;
 }
 
+/* ========== 响应式：显示器 / 笔记本 两档 ========== */
+
+/* 大屏显示器（≥1440px，侧栏关闭时）：内容放宽，避免两侧大片空白。
+   - 首页（home-article）：内容居中放大到 1080px。
+   - 文章页：内容放大到 1080px 并向左让位约半个目录区，
+     使「正文 + 右侧目录」作为一个整体在视口中居中。 */
+@media screen and (min-width: 1440px) and (max-width: 1899px) {
+  .markdown-content.collapsed.home-article {
+    max-width: 1080px;
+    /* 首页无右侧目录，保持纯居中（覆盖 .collapsed 的让位偏移） */
+    transform: translateX(-50%);
+  }
+
+  .markdown-content.collapsed {
+    max-width: 1080px;
+    transform: translateX(calc(-50% - 150px));
+  }
+}
+
+/* 超宽屏（≥1900px，侧栏关闭）：内容进一步放宽到 1120px */
+@media screen and (min-width: 1900px) {
+  .markdown-content.collapsed.home-article {
+    max-width: 1120px;
+  }
+
+  .markdown-content.collapsed {
+    max-width: 1120px;
+  }
+}
+
+/* 侧栏打开时：内容保持 880px 居中（左侧目录占位，无需让位） */
+
+/* 笔记本 / 中小屏（769px - 1024px）：略收窄内边距 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .markdown-content {
+    max-width: 760px;
+    padding: 36px 32px;
+  }
+}
+
+/* GFM 脚注区排版 */
+.markdown-content .footnotes {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #eee);
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+
+.markdown-content .footnotes ol {
+  padding-left: 1.4em;
+}
+
+.markdown-content sup a {
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+/* 超大文档渲染优化：屏外的代码块/表格/mermaid 暂不参与布局与绘制，
+   滚动到附近时浏览器自动渲染（content-visibility 渐进增强，不支持的浏览器无副作用） */
+.markdown-content .code-container,
+.markdown-content .table-wrapper,
+.markdown-content .mermaid-wrapper {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
 /* 功能区：代码高亮风格选择 */
 .feature-area {
   display: flex;
@@ -539,16 +606,20 @@
   color: #cbd5e1;
 }
 
-/* 移动端 */
+/* 移动端（≤768px）：内容卡片流式排版，顶部为固定顶栏让位 */
 @media (max-width: 768px) {
   .markdown-content {
     position: static;
     transform: none;
     left: auto;
-    margin: 12px;
+    top: auto;
+    margin: 70px 12px 24px;
     padding: 24px 20px;
     width: calc(100% - 24px);
     max-width: none;
+    border-radius: var(--radius);
+    min-height: auto;
+    box-shadow: var(--shadow-sm);
   }
 
   .markdown-content h1 { font-size: 1.3rem; }

@@ -121,6 +121,21 @@
   margin-bottom: 4px;
 }
 
+/* 懒加载：文件夹加载中 / 空目录提示 */
+.nav-loading {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #999);
+  opacity: 0.8;
+}
+
+.nav-hint {
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--text-secondary, #999);
+  list-style: none;
+}
+
 /* 移动端 H5 */
 @media (max-width: 768px) {
   /* 背景遮罩 */

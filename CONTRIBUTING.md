@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你对 TechBlog 的关注！欢迎提交 Issue 和 Pull Request。
+感谢你对 AldusBlog 的关注！欢迎提交 Issue 和 Pull Request。
 
 ## 开发环境准备
 
@@ -8,8 +8,8 @@
 2. 克隆仓库并安装依赖：
 
 ```bash
-git clone https://github.com/caojp/tech-blog.git
-cd tech-blog/frontend && npm install
+git clone https://github.com/caojp/aldus-blog.git
+cd aldus-blog/frontend && npm install
 ```
 
 3. 配置 Markdown 目录：编辑 `.env.development`，设置 `POSTS_DIR` 指向你的知识库。

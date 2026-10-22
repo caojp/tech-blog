@@ -1,7 +1,7 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import '../styles/SideNav.css';
 
-const STORAGE_KEY = 'tech-blog-sidebar-width';
+const STORAGE_KEY = 'aldusblog-sidebar-width';
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
 
@@ -14,9 +14,12 @@ const getDefaultWidth = () => {
     return 240;
 };
 
-const SideNav = ({ subcategories, onFileSelect, isDarkMode, toggleSideNav, isSideNavOpen }) => {
+const SideNav = ({ subcategories, onFileSelect, isDarkMode, toggleSideNav, isSideNavOpen, onLoadChildren }) => {
     const [expandedPaths, setExpandedPaths] = useState({});
     const [activePath, setActivePath] = useState(null);
+    // 懒加载：已拉取过的目录 path -> 子节点；loadingPaths: path -> 是否正在加载
+    const [childrenMap, setChildrenMap] = useState({});
+    const [loadingPaths, setLoadingPaths] = useState({});
     const [sidebarWidth, setSidebarWidth] = useState(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         return saved ? parseInt(saved, 10) : getDefaultWidth();
@@ -60,11 +63,29 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode, toggleSideNav, isSid
         setIsResizing(true);
     }, []);
 
-    const toggleExpand = (path) => {
-        setExpandedPaths((prev) => ({
-            ...prev,
-            [path]: !prev[path],
-        }));
+    // 展开/折叠文件夹；子节点尚未加载（children 为 null）时按需拉取
+    const handleFolderClick = (subcategory) => {
+        const path = subcategory.path;
+        const isExpanded = !!expandedPaths[path];
+        const children = subcategory.children || childrenMap[path];
+        const needLoad = !isExpanded && !Array.isArray(children);
+
+        if (needLoad && onLoadChildren) {
+            setLoadingPaths((prev) => ({ ...prev, [path]: true }));
+            onLoadChildren(path)
+                .then((res) => {
+                    setChildrenMap((prev) => ({ ...prev, [path]: (res && res.data) || [] }));
+                })
+                .catch((err) => {
+                    console.error('加载子目录失败:', path, err);
+                    setChildrenMap((prev) => ({ ...prev, [path]: [] }));
+                })
+                .finally(() => {
+                    setLoadingPaths((prev) => ({ ...prev, [path]: false }));
+                });
+        }
+
+        setExpandedPaths((prev) => ({ ...prev, [path]: !prev[path] }));
     };
 
     const handleFileSelect = (subcategory) => {
@@ -84,14 +105,27 @@ const SideNav = ({ subcategories, onFileSelect, isDarkMode, toggleSideNav, isSid
                         {subcategory.is_dir ? (
                             <>
                                 <div
-                                    onClick={() => toggleExpand(subcategory.path)}
+                                    onClick={() => handleFolderClick(subcategory)}
                                     className={`folder-name ${expandedPaths[subcategory.path] ? 'expanded' : ''}`}
                                 >
                                     {subcategory.name}
+                                    {loadingPaths[subcategory.path] && <span className="nav-loading">…</span>}
                                 </div>
-                                {expandedPaths[subcategory.path] && subcategory.children && (
+                                {expandedPaths[subcategory.path] && (
                                     <ul className="sub-list">
-                                        {renderSubcategories(subcategory.children)}
+                                        {(() => {
+                                            const children = subcategory.children || childrenMap[subcategory.path];
+                                            if (Array.isArray(children) && children.length > 0) {
+                                                return renderSubcategories(children);
+                                            }
+                                            if (loadingPaths[subcategory.path]) {
+                                                return <li className="nav-hint">加载中...</li>;
+                                            }
+                                            if (Array.isArray(children)) {
+                                                return <li className="nav-hint">（无内容）</li>;
+                                            }
+                                            return null;
+                                        })()}
                                     </ul>
                                 )}
                             </>

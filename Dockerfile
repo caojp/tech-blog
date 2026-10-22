@@ -19,8 +19,8 @@ COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 创建 Markdown 内容目录（映射到 nginx.conf 中 alias 路径）
-# docker run 时用 -v /your/posts:/opt/tech-blog/awesome-me 挂载实际内容
-RUN mkdir -p /opt/tech-blog/awesome-me
+# docker run 时用 -v /your/posts:/opt/aldus-blog/awesome-me 挂载实际内容
+RUN mkdir -p /opt/aldus-blog/awesome-me
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,13 +1,43 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import '../styles/TableOfContents.css'; // 引入样式文件
 
 const TableOfContents = ({ anchors, isDarkMode }) => {
     const [collapsed, setCollapsed] = useState(false);
+    const [activeId, setActiveId] = useState(null);
 
     // 处理折叠按钮的点击事件
     const handleToggle = () => {
         setCollapsed(!collapsed);
     };
+
+    // 滚动时高亮当前章节（进入视口上沿的最后一个锚点）
+    const updateActive = useCallback(() => {
+        const probe = 140; // 顶部导航高度偏移
+        let current = null;
+        for (const a of anchors) {
+            const el = document.getElementById(a.id);
+            if (el && el.getBoundingClientRect().top <= probe) current = a.id;
+        }
+        setActiveId(current);
+    }, [anchors]);
+
+    useEffect(() => {
+        setActiveId(null); // 文章切换时重置
+        let raf = 0;
+        const onScroll = () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(updateActive);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        updateActive();
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+            cancelAnimationFrame(raf);
+        };
+    }, [updateActive]);
+
     // 检查当前屏幕宽度是否为窄屏幕
     useEffect(() => {
         const handleResize = () => {
@@ -40,7 +70,13 @@ const TableOfContents = ({ anchors, isDarkMode }) => {
             <ul>
                 {anchors.map((anchor, index) => (
                     <li key={index} className={`toc-level-${anchor.level}`}>
-                        <a href={`#${anchor.id}`}>{anchor.text}</a>
+                        <a
+                            href={`#${anchor.id}`}
+                            className={anchor.id === activeId ? 'active' : ''}
+                            onClick={() => setActiveId(anchor.id)}
+                        >
+                            {anchor.text}
+                        </a>
                     </li>
                 ))}
             </ul>

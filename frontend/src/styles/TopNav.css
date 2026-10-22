@@ -14,11 +14,110 @@
   box-shadow: var(--shadow-sm);
 }
 
-.top-nav-left {
+/* 左区固定容器：品牌标题 + 功能图标，不参与分类菜单溢出测量 */
+.top-nav-fixed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ========== 品牌 Logo（标题区） ========== */
+.top-nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 4px 8px 4px 4px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text);
+  transition: background-color 0.2s;
+}
+
+.brand-logo:hover {
+  background-color: var(--bg-hover);
+}
+
+.brand-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+}
+
+.brand-name::first-letter {
+  color: var(--color-primary);
+}
+
+/* ========== 功能区：图标按钮组（与标题区分离） ========== */
+.top-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
+}
+
+/* 通用图标按钮 */
+.nav-icon-btn {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-icon-btn:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border);
+  color: var(--color-primary);
+}
+
+/* ========== 通用 CSS Tooltip：通过 data-tip 属性触发 ========== */
+[data-tip] {
+  position: relative;
+}
+
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  background: var(--text);
+  color: var(--bg-surface);
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 500;
+  padding: 5px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  z-index: 1200;
+}
+
+[data-tip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ========== 隐藏探针：.top-nav 直接子级，永远横向，永不塌缩 ========== */
@@ -52,13 +151,16 @@
 .top-nav-right {
   display: flex;
   align-items: center;
-  flex: 0 1 auto;       /* 不 grow，允许 shrink 到 0 */
+  flex: 1 1 auto;       /* 撑满剩余空间，分类尽量铺开显示 */
   min-width: 0;
+  overflow: hidden;
 }
 
 .nav-list-wrapper {
   display: flex;
   align-items: center;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .nav-list-wrapper .nav-list {
@@ -68,6 +170,14 @@
   display: flex;
   flex-direction: row;
   gap: 4px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+/* 溢出态：内联菜单右侧渐变淡出，提示还有更多分类（在汉堡下拉中查看全部） */
+.top-nav.is-overflowing .top-nav-right {
+  mask-image: linear-gradient(to right, #000 80%, transparent 97%);
+  -webkit-mask-image: linear-gradient(to right, #000 80%, transparent 97%);
 }
 
 .nav-link {
@@ -143,7 +253,6 @@
   flex-shrink: 0;
   transition: background-color 0.2s, border-color 0.2s;
 }
-
 .hamburger-menu:hover {
   background-color: var(--bg-hover);
   border-color: var(--color-primary);
@@ -228,4 +337,46 @@
   display: block;
   padding: 10px 14px;
   font-size: 0.9rem;
+}
+
+/* ========== 移动端（≤768px）：紧凑顶栏 ========== */
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 0 10px;
+  }
+
+  .top-nav-fixed {
+    gap: 6px;
+  }
+
+  .top-nav-actions {
+    gap: 4px;
+  }
+
+  .brand-logo {
+    padding: 2px 6px 2px 2px;
+  }
+
+  .brand-logo svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* 窄屏隐藏品牌文字，只留图标 */
+  .brand-name {
+    display: none;
+  }
+
+  .top-nav-actions .nav-icon-btn,
+  .top-nav-actions .toggle-button,
+  .top-nav-actions .hamburger-menu {
+    width: 32px;
+    height: 32px;
+  }
+
+  .top-nav-actions .nav-icon-btn svg,
+  .top-nav-actions .toggle-button svg {
+    width: 17px;
+    height: 17px;
+  }
 }

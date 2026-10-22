@@ -1,4 +1,4 @@
-# TechBlog Makefile
+# AldusBlog Makefile
 # 统一管理常用开发、构建、检查命令
 
 .PHONY: dev build lint docker help

@@ -132,5 +132,54 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), postsPlugin(postsAbsPath)],
+    build: {
+      // mermaid 包是懒加载的（含图才下载），允许较大体积
+      chunkSizeWarningLimit: 3400,
+      rollupOptions: {
+        output: {
+          // 手动分包：把体积大头拆成独立 chunk，便于浏览器缓存与首屏提速
+          // 注意：mermaid 不在此手动拆分——它是动态 import（含图才加载），
+          // 由 Rollup 自动生成独立 chunk 并正确组织其依赖图；
+          // 曾尝试手动把 mermaid 依赖塞入独立 chunk，导致其被提升到主加载链并触发
+          // TDZ 错误（Cannot access 'Pi' before initialization），整站白屏。
+          manualChunks(id) {
+            // mermaid 及其专属依赖：返回 undefined（不手动归组），
+            // 让 Rollup 按动态 import 自动拆分——首屏不加载，打开含图文章时才下载。
+            // 若把 mermaid 归入任意手动 chunk（含 vendor），会被提升进主加载链
+            // 或合并进 vendor，破坏懒加载并可能触发 TDZ 执行顺序错误。
+            if (
+              id.includes('node_modules/mermaid')
+              || id.includes('node_modules/d3-')
+              || id.includes('node_modules/dompurify')
+              || id.includes('node_modules/katex')
+              || id.includes('node_modules/cytoscape')
+              || id.includes('node_modules/@upsetjs')
+              || id.includes('node_modules/@mermaid-js')
+              || id.includes('node_modules/@iconify')
+              || id.includes('node_modules/@braintree')
+              || id.includes('node_modules/roughjs')
+              || id.includes('node_modules/khroma')
+              || id.includes('node_modules/marked')
+              || id.includes('node_modules/es-toolkit')
+              || id.includes('node_modules/ts-dedent')
+              || id.includes('node_modules/fastdom')
+              || id.includes('node_modules/stylis')
+              || id.includes('node_modules/non-layered-tidy')
+            ) {
+              return undefined;
+            }
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler') || id.includes('node_modules/react-router') || id.includes('node_modules/react-is') || id.includes('node_modules/use-sync-external-store')) {
+              return 'react-vendor';
+            }
+            if (id.includes('node_modules/react-syntax-highlighter') || id.includes('node_modules/refractor') || id.includes('node_modules/hast-util')) {
+              return 'highlight';
+            }
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
   };
 });

@@ -41,6 +41,13 @@
   text-decoration: none;
 }
 
+/* 当前章节高亮 */
+.table-of-contents a.active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 /* 不同级别标题的缩进与字重 */
 .toc-level-1 {
   font-weight: 600;

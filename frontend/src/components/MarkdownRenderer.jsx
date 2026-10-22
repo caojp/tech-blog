@@ -3,8 +3,21 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { okaidia, oneDark, oneLight, vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import mermaid from 'mermaid';
+import { POSTS_URL, encodePath } from '../api/content';
+import ArticleMeta from './ArticleMeta';
+import HomeOverview from './HomeOverview';
+import PrevNextNav from './PrevNextNav';
+import GiscusComments from './GiscusComments';
 import '../styles/MarkdownRenderer.css';
+
+// mermaid 体积大（约 1.5MB+）：动态 import，只有文章里真正含 mermaid 图时才下载。
+// 注意：import('mermaid') 返回模块命名空间，实例在 default 上（静态 import 时是默认导出）。
+let mermaidPromise = null;
+const getMermaid = async () => {
+    if (!mermaidPromise) mermaidPromise = import('mermaid');
+    const mod = await mermaidPromise;
+    return mod && mod.default ? mod.default : mod;
+};
 
 // 按需注册代码高亮语言
 import go from 'react-syntax-highlighter/dist/esm/languages/prism/go';
@@ -96,7 +109,7 @@ function preprocessMermaid(source) {
         if (text.startsWith('(')) return m;   // 圆柱 [(text)]
         if (text.startsWith('/')) return m;   // 平行四边形 /text/
         if (text.startsWith('{')) return m;   // 六边形 {{text}}
-        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        if (!/[#<>'"(){}[\]/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
         const safe = text.replace(/"/g, '&quot;');
         return `${id}["${safe}"]`;
     });
@@ -108,7 +121,7 @@ function preprocessMermaid(source) {
         if (trimmed.startsWith('"')) return m;
         if (['subgraph','direction','classDef','style','class','linkStyle'].includes(id.toLowerCase())) return m;
         if (text.startsWith('(')) return m;   // 圆形 ((text))
-        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        if (!/[#<>'"(){}[\]/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
         const safe = text.replace(/"/g, '&quot;');
         return `${id}("${safe}")`;
     });
@@ -120,7 +133,7 @@ function preprocessMermaid(source) {
         if (trimmed.startsWith('"')) return m;
         if (['subgraph','direction','classDef','style','class','linkStyle'].includes(id.toLowerCase())) return m;
         if (text.startsWith('{')) return m;   // 六边形 {{text}}
-        if (!/[#<>'"\(\)\{\}\[\]\/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
+        if (!/[#<>'"(){}[\]/\\+]|<br\s*\/?>|&amp;|&lt;|&gt;/.test(text)) return m;
         const safe = text.replace(/"/g, '&quot;');
         return `${id}{"${safe}"}`;
     });
@@ -128,7 +141,7 @@ function preprocessMermaid(source) {
     // === Step 3: 处理每个 edge label 并还原占位符 ===
     let result = protectedSource;
     for (let i = edgeLabels.length - 1; i >= 0; i--) {
-        const { arrow, label } = edgeLabels[i];
+        const { label } = edgeLabels[i];
         const trimmed = label.trim();
         let newLabel;
         if (/^".*"$/.test(trimmed)) {
@@ -139,7 +152,7 @@ function preprocessMermaid(source) {
             // 只有开头引号（用户尝试加引号）
             const inner = trimmed.slice(1).replace(/"/g, '&quot;');
             newLabel = `"${inner}"`;
-        } else if (/[()+{}\[\]\/\\#<>'+]/.test(trimmed) || /<br\s*\/?>/.test(trimmed)) {
+        } else if (/[()+{}[\]/\\#<>'+]/.test(trimmed) || /<br\s*\/?>/.test(trimmed)) {
             // 含特殊字符，需要加引号
             const safe = trimmed.replace(/"/g, '&quot;');
             newLabel = `"${safe}"`;
@@ -153,23 +166,32 @@ function preprocessMermaid(source) {
     return result;
 }
 
-const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOpenFullscreen }) => {
+/**
+ * 解析文章内图片地址：
+ * 笔记 md 里的相对路径图片（如 ![](images/a.png)）在生产模式下会按站点根解析而 404，
+ * 这里基于当前文章所在目录补上 POSTS_URL 前缀。
+ * 绝对地址（http/https/data:）、站内根路径（/）、锚点（#）保持原样。
+ */
+function resolveImageSrc(src, filePath) {
+    if (!src) return src;
+    if (/^(https?:|data:|#|\/)/i.test(src)) return src;
+
+    const idx = filePath ? filePath.lastIndexOf('/') : -1;
+    const baseDir = idx > 0 ? filePath.slice(0, idx) : '';
+    const clean = src.replace(/^\.\//, '');
+    const rel = baseDir ? `${baseDir}/${clean}` : clean;
+    return `${POSTS_URL}/${encodePath(rel)}`;
+}
+
+// 文章附属内容（文章信息 / 首页概览 / 上下篇 / 评论）渲染在 markdown-content 内部，
+// 跟随文章排版流式居中；绝不能放在 main-content 层（那里会被 fixed 侧栏与 absolute 文章区遮挡）。
+const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOpenFullscreen, filePath, mtime, onNavigate, showOverview }) => {
     const containerRef = useRef(null);
     const [highlightStyle, setHighlightStyle] = useState('okaidia');
     const [copyButtonText, setCopyButtonText] = useState('⎘');
     const mermaidCounter = useRef(0);
 
-    // 初始化 mermaid
-    useEffect(() => {
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: isDarkMode ? 'dark' : 'default',
-            securityLevel: 'loose',
-            fontFamily: 'inherit',
-        });
-    }, [isDarkMode]);
-
-    // 内容渲染完成后：提取锚点 + 渲染 mermaid
+    // 内容渲染完成后：提取锚点 + 渲染 mermaid（mermaid 库按需动态加载）
     useEffect(() => {
         if (!containerRef.current) return;
 
@@ -198,6 +220,16 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOp
         // === mermaid 图表渲染 ===
         const renderMermaid = async () => {
             const containers = containerRef.current.querySelectorAll('.mermaid-block');
+            if (containers.length === 0) return;
+
+            const mermaid = await getMermaid();
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: isDarkMode ? 'dark' : 'default',
+                securityLevel: 'loose',
+                fontFamily: 'inherit',
+            });
+
             for (const el of containers) {
                 if (el.dataset.rendered === 'true') continue;
                 const rawSource = mermaidSourceMap.get(el) || '';
@@ -282,7 +314,7 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOp
         });
     }, [onOpenFullscreen]);
 
-    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''}`;
+    const markdownClass = `markdown-content ${isDarkMode ? 'dark-mode' : ''} ${!isSideNavOpen ? 'collapsed' : ''} ${showOverview ? 'home-article' : ''}`;
 
     const handleCopyToClipboard = (code) => {
         navigator.clipboard.writeText(code)
@@ -310,6 +342,8 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOp
                 </div>
             </div>
 
+            <ArticleMeta path={filePath} mtime={mtime} content={content} />
+
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -323,6 +357,17 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOp
                             <table {...props} />
                         </div>
                     ),
+                    img({ src, alt, title, ...props }) {
+                        return (
+                            <img
+                                src={resolveImageSrc(src, filePath)}
+                                alt={alt || ''}
+                                title={title}
+                                loading="lazy"
+                                {...props}
+                            />
+                        );
+                    },
                     code({ inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
                         const lang = match ? match[1].toLowerCase() : '';
@@ -385,6 +430,10 @@ const MarkdownRenderer = ({ content, setAnchors, isDarkMode, isSideNavOpen, onOp
             >
                 {content}
             </ReactMarkdown>
+
+            {showOverview && <HomeOverview onNavigate={onNavigate} />}
+            <PrevNextNav currentPath={filePath} onNavigate={onNavigate} />
+            <GiscusComments filePath={filePath} isDarkMode={isDarkMode} />
         </div>
     );
 };

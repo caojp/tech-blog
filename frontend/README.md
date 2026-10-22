@@ -1,4 +1,4 @@
-# TechBlog Frontend
+# AldusBlog Frontend
 
 基于 React + Vite 的纯前端博客，负责 Markdown 渲染与文档站点交互。
 

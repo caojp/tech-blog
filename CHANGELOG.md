@@ -15,7 +15,7 @@
 - 新增 Issue/PR 模板规范贡献流程
 
 ### Changed
-- go.mod module 路径改为 `github.com/caojp/tech-blog/backend`
+- go.mod module 路径改为 `github.com/caojp/aldus-blog/backend`
 - 重写根 README，增加徽章、目录、架构图、部署说明
 - 替换 frontend/README.md（原为 Vite 模板默认内容）
 - 优化 .gitignore 分类与规则

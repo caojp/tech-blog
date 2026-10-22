@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="frontend/public/logo-color.svg" alt="TechBlog" width="120">
+  <img src="frontend/public/aldus-logo.svg" alt="AldusBlog" width="300">
 </p>
 
-<h1 align="center">TechBlog</h1>
+<h1 align="center">AldusBlog</h1>
 
 <p align="center">
-  基于 React + Vite 的纯前端 Markdown 博客系统，将本地 Markdown 文件夹变成结构化的在线文档站点
+  基于 React + Vite 的纯前端 Markdown 博客系统，将本地 Markdown 文件夹变成结构化的在线文档站点，支持 Docker Compose 本地部署、nginx 实时读取笔记目录
 </p>
 
 <p align="center">
-  <a href="https://github.com/caojp/tech-blog/actions"><img alt="CI" src="https://github.com/caojp/tech-blog/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/caojp/aldus-blog/actions"><img alt="CI" src="https://github.com/caojp/aldus-blog/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="React Version" src="https://img.shields.io/badge/React-18+-61DAFB">
   <img alt="Vite Version" src="https://img.shields.io/badge/Vite-5+-646CFF">
@@ -99,8 +99,8 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/caojp/tech-blog.git
-cd tech-blog
+git clone https://github.com/caojp/aldus-blog.git
+cd aldus-blog
 ```
 
 ### 2. 配置 Markdown 目录
@@ -133,12 +133,15 @@ npm run dev
 
 在 `POSTS_DIR` 指定的目录下放 Markdown 文件即可（参见[内容目录约定](#内容目录约定)）。
 
-开发模式下新增/修改 `.md` 文件会自动触发热更新。生产环境需要重新 `npm run build`。
+- **开发模式**：新增/修改 `.md` 文件自动热更新。
+- **生产模式（Docker）**：笔记目录以只读卷挂载进容器，nginx 实时读取——本地新增/修改笔记后刷新页面即生效，无需重新构建。
+
+> 更推荐 Docker 部署：内容目录（如 `/Users/Yolanda/caojp/awesome-me`）映射为本机目录，改笔记即发布。
 
 ## 项目结构
 
 ```
-tech-blog/
+aldus-blog/
 ├── frontend/                     # React 前端（唯一需要运行的）
 │   ├── src/
 │   │   ├── api/
@@ -243,12 +246,16 @@ npm run build
 | **Nginx** | 自建服务器 |
 | **S3 + CloudFront** | AWS 生态 |
 
-### 方式二：Docker
+### 方式二：Docker Compose（推荐，笔记目录实时挂载）
+
+仓库内置 `docker-compose.yml`，把本机笔记目录**只读挂载**进容器，nginx 实时读取：
 
 ```bash
-docker build -t tech-blog .
-docker run -p 80:80 tech-blog
+docker compose up -d --build   # 构建镜像并后台启动（默认 http://localhost:8090）
+docker compose down            # 停止容器
 ```
+
+默认挂载 `/Users/Yolanda/caojp/awesome-me:/opt/aldus-blog/awesome-me:ro`——把卷的左侧改成你自己的笔记目录即可，新增/修改 Markdown 刷新即生效。
 
 ### 方式三：本地预览
 

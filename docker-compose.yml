@@ -1,11 +1,11 @@
 services:
-  tech-blog:
+  aldus-blog:
     build: .
-    container_name: tech-blog
+    container_name: aldus-blog
     ports:
-      - "80:80"
+      - "8090:80"
     # 挂载你的 Markdown 内容目录到 nginx 配置中的 alias 路径
-    # 修改左边路径为你服务器上的 md 目录
+    # 本机路径：/Users/Yolanda/caojp/awesome-me（只读）
     volumes:
-      - /opt/tech-blog/awesome-me:/opt/tech-blog/awesome-me:ro
+      - /Users/Yolanda/caojp/awesome-me:/opt/aldus-blog/awesome-me:ro
     restart: unless-stopped

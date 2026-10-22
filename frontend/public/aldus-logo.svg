@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 72" width="300" height="72" role="img" aria-label="AldusBlog">
+  <defs>
+    <linearGradient id="aldus-g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!-- 图标：蓝紫渐变圆角方块 + 白色 A 字母（与 favicon / 顶部 Logo 同风格） -->
+  <rect x="4" y="4" width="64" height="64" rx="16" fill="url(#aldus-g)"/>
+  <path d="M20 52 L36 16 L52 52" stroke="#ffffff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M27 40 L45 40" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+  <!-- 文字：AldusBlog -->
+  <text x="86" y="45" font-family="Inter, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="-0.5" fill="#1e293b">Aldus<tspan fill="#2563eb">Blog</tspan></text>
+</svg>

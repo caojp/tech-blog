@@ -7,7 +7,7 @@
 请通过以下方式私下报告：
 
 1. 发送邮件至项目维护者（通过 GitHub 个人主页获取邮箱）
-2. 或使用 GitHub 的 [Security Advisory](https://github.com/caojp/tech-blog/security/advisories/new) 功能
+2. 或使用 GitHub 的 [Security Advisory](https://github.com/caojp/aldus-blog/security/advisories/new) 功能
 
 报告中请包含：
 - 漏洞的详细描述

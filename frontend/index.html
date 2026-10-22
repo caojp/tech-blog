@@ -2,16 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo-no-background.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TechBlog</title>
+    <title>AldusBlog</title>
   </head>
   <body>
     <script>
       // 在 React 加载前根据已保存的主题设置 body 类，避免主题闪屏（FOUC）。
       (function () {
         try {
-          var saved = localStorage.getItem('tech-blog-theme');
+          var saved = localStorage.getItem('aldusblog-theme');
           var dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.body.classList.add(dark ? 'dark-mode' : 'light-mode');
         } catch (e) {}
