@@ -171,9 +171,12 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler') || id.includes('node_modules/react-router') || id.includes('node_modules/react-is') || id.includes('node_modules/use-sync-external-store')) {
               return 'react-vendor';
             }
-            if (id.includes('node_modules/react-syntax-highlighter') || id.includes('node_modules/refractor') || id.includes('node_modules/hast-util')) {
-              return 'highlight';
-            }
+            // 注意：react-syntax-highlighter / refractor / hast-util 不手动归组！
+            // 曾将它们归入独立 highlight chunk，但 PrismLight 定义会被 Rollup 提升到
+            // react-vendor chunk，而它依赖的 refractor 与语言定义仍留在 highlight chunk，
+            // 形成 react-vendor → highlight → vendor → react-vendor 的循环初始化，
+            // 导致 registerLanguage 写入未初始化完的实例，生产构建全部代码块退化为
+            // 无 token 的纯文本（高亮丢失）。让 Rollup 自动拆分可保证执行顺序正确。
             if (id.includes('node_modules')) {
               return 'vendor';
             }
